@@ -204,7 +204,7 @@ function OrdersContent() {
                                     <Label>Order Taker</Label>
                                     <Input
                                         type="text"
-                                        placeholder="Staff name"
+                                        placeholder="Order Taker name"
                                         value={filters.orderTaker}
                                         onChange={(e) => setFilters({ ...filters, orderTaker: e.target.value })}
                                     />

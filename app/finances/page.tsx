@@ -265,6 +265,17 @@ export default function FinancesPage() {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <Label>Description</Label>
+                                    <Input
+                                        type="text"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        placeholder="e.g., Product sale, Rent payment"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label>Date</Label>
                                     <div className="relative">
                                         <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />

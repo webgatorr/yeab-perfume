@@ -2,7 +2,18 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import {
+    Loader2,
+    Calendar,
+    Phone,
+    User,
+    Package,
+    MapPin,
+    FileText,
+    Hash,
+    Ticket,
+    MessageSquare
+} from 'lucide-react';
 
 const UAE_EMIRATES = [
     'Abu Dhabi',
@@ -70,128 +81,185 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
             {/* Customer Details */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-medium text-slate-900 border-b pb-2">Customer Details</h3>
+            <div className="card space-y-4">
+                <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+                    <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                        <User className="h-4 w-4 text-slate-900" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900">Customer Details</h3>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Date *</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <Calendar className="h-3.5 w-3.5 text-slate-500" />
+                            Date *
+                        </label>
                         <input
                             type="date"
                             value={formData.date}
                             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                             required
+                            className="w-full"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">WhatsApp Number *</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <Phone className="h-3.5 w-3.5 text-slate-500" />
+                            WhatsApp Number *
+                        </label>
                         <input
                             type="tel"
                             value={formData.whatsappNumber}
                             onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
                             placeholder="+971 50 123 4567"
                             required
+                            className="w-full"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Direct Phone</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <Phone className="h-3.5 w-3.5 text-slate-500" />
+                            Direct Phone
+                        </label>
                         <input
                             type="tel"
                             value={formData.directPhone}
                             onChange={(e) => setFormData({ ...formData, directPhone: e.target.value })}
                             placeholder="+971 50 123 4567"
+                            className="w-full"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Order Taker *</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <User className="h-3.5 w-3.5 text-slate-500" />
+                            Order Taker *
+                        </label>
                         <input
                             type="text"
                             value={formData.orderTaker}
                             onChange={(e) => setFormData({ ...formData, orderTaker: e.target.value })}
-                            placeholder="Staff Name"
+                            placeholder="Order Taker Name"
                             required
+                            className="w-full"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Product Details */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-medium text-slate-900 border-b pb-2">Product Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="md:col-span-2 space-y-2">
-                        <label className="text-sm font-medium leading-none">Perfume Choice *</label>
+            <div className="card space-y-4">
+                <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+                    <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                        <Package className="h-4 w-4 text-slate-900" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900">Product Details</h3>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <Package className="h-3.5 w-3.5 text-slate-500" />
+                            Perfume Choice *
+                        </label>
                         <input
                             type="text"
                             value={formData.perfumeChoice}
                             onChange={(e) => setFormData({ ...formData, perfumeChoice: e.target.value })}
-                            placeholder="e.g., Rose Oud"
+                            placeholder=" "
                             required
+                            className="w-full"
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Quantity *</label>
-                        <input
-                            type="number"
-                            min="1"
-                            value={formData.amount}
-                            onChange={(e) => setFormData({ ...formData, amount: parseInt(e.target.value) })}
-                            required
-                        />
-                    </div>
-
-                    <div className="space-y-2 flex items-end pb-2">
-                        <div className="flex gap-6">
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.hasCustomText}
-                                    onChange={(e) => setFormData({ ...formData, hasCustomText: e.target.checked })}
-                                    className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                                />
-                                <span className="text-sm font-medium">Custom Text</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                                <Hash className="h-3.5 w-3.5 text-slate-500" />
+                                Quantity *
                             </label>
+                            <input
+                                type="number"
+                                min="1"
+                                value={formData.amount}
+                                onChange={(e) => setFormData({ ...formData, amount: parseInt(e.target.value) })}
+                                required
+                                className="w-full"
+                            />
+                        </div>
 
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.hasCustomImage}
-                                    onChange={(e) => setFormData({ ...formData, hasCustomImage: e.target.checked })}
-                                    className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                                />
-                                <span className="text-sm font-medium">Custom Image</span>
-                            </label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700">Customization</label>
+                            <div className="flex gap-4 h-10 items-center">
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.hasCustomText}
+                                            onChange={(e) => setFormData({ ...formData, hasCustomText: e.target.checked })}
+                                            className="peer h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 cursor-pointer"
+                                        />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">በስም</span>
+                                </label>
+
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.hasCustomImage}
+                                            onChange={(e) => setFormData({ ...formData, hasCustomImage: e.target.checked })}
+                                            className="peer h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 cursor-pointer"
+                                        />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">በፎቶ</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
                     {formData.hasCustomText && (
-                        <div className="md:col-span-2 space-y-2">
-                            <label className="text-sm font-medium leading-none">Custom Text Content</label>
+                        <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                                <FileText className="h-3.5 w-3.5 text-slate-500" />
+                                Custom Text Content
+                            </label>
                             <input
                                 type="text"
                                 value={formData.customTextContent}
                                 onChange={(e) => setFormData({ ...formData, customTextContent: e.target.value })}
-                                placeholder="Text to print"
+                                placeholder="Text to print on the perfume"
+                                className="w-full"
                             />
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Location */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-medium text-slate-900 border-b pb-2">Delivery Location</h3>
+            {/* Delivery Location */}
+            <div className="card space-y-4">
+                <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+                    <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-slate-900" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900">Delivery Location</h3>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Emirate</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <MapPin className="h-3.5 w-3.5 text-slate-500" />
+                            Emirate
+                        </label>
                         <select
                             value={formData.emirate}
                             onChange={(e) => setFormData({ ...formData, emirate: e.target.value })}
+                            className="w-full"
                         >
                             <option value="">Select Emirate</option>
                             {UAE_EMIRATES.map((emirate) => (
@@ -202,23 +270,31 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Area</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <MapPin className="h-3.5 w-3.5 text-slate-500" />
+                            Area
+                        </label>
                         <input
                             type="text"
                             value={formData.area}
                             onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                             placeholder="e.g., Downtown"
+                            className="w-full"
                         />
                     </div>
 
                     {formData.emirate === 'other' && (
-                        <div className="md:col-span-2 space-y-2">
-                            <label className="text-sm font-medium leading-none">Other Location</label>
+                        <div className="md:col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                                <MapPin className="h-3.5 w-3.5 text-slate-500" />
+                                Other Location
+                            </label>
                             <input
                                 type="text"
                                 value={formData.otherLocation}
                                 onChange={(e) => setFormData({ ...formData, otherLocation: e.target.value })}
                                 placeholder="City/Country"
+                                className="w-full"
                             />
                         </div>
                     )}
@@ -226,35 +302,50 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
             </div>
 
             {/* Additional Info */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-medium text-slate-900 border-b pb-2">Additional Info</h3>
+            <div className="card space-y-4">
+                <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+                    <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                        <FileText className="h-4 w-4 text-slate-900" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900">Additional Info</h3>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Receipt Number</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <Hash className="h-3.5 w-3.5 text-slate-500" />
+                            Receipt Number
+                        </label>
                         <input
                             type="text"
                             value={formData.receiptNumber}
                             onChange={(e) => setFormData({ ...formData, receiptNumber: e.target.value })}
-                            placeholder="RCP-001"
+                            placeholder=""
+                            className="w-full"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium leading-none">Coupon Number</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <Ticket className="h-3.5 w-3.5 text-slate-500" />
+                            Coupon Number
+                        </label>
                         <input
                             type="text"
                             value={formData.couponNumber}
                             onChange={(e) => setFormData({ ...formData, couponNumber: e.target.value })}
-                            placeholder="CPN-123"
+                            placeholder=" "
+                            className="w-full"
                         />
                     </div>
 
                     {orderId && (
                         <div className="space-y-2">
-                            <label className="text-sm font-medium leading-none">Status</label>
+                            <label className="text-sm font-medium text-slate-700">Status</label>
                             <select
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                className="w-full"
                             >
                                 <option value="pending">Pending</option>
                                 <option value="completed">Completed</option>
@@ -264,22 +355,27 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                     )}
 
                     <div className="md:col-span-2 space-y-2">
-                        <label className="text-sm font-medium leading-none">Notes</label>
+                        <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                            <MessageSquare className="h-3.5 w-3.5 text-slate-500" />
+                            Notes
+                        </label>
                         <textarea
                             value={formData.notes}
                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                             rows={3}
                             placeholder="Any special instructions..."
+                            className="w-full resize-none"
                         />
                     </div>
                 </div>
             </div>
 
-            <div className="flex justify-end gap-4 pt-4">
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-2">
                 <button
                     type="button"
                     onClick={() => router.back()}
-                    className="btn btn-outline h-10 px-4"
+                    className="btn btn-outline h-10 px-6"
                 >
                     Cancel
                 </button>
