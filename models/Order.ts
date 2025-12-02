@@ -16,7 +16,7 @@ export interface IOrder {
     orderTaker: string;
     receiptNumber?: string;
     couponNumber?: string;
-    status: 'pending' | 'completed' | 'cancelled';
+    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     notes?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -82,7 +82,7 @@ const OrderSchema = new Schema<IOrder>(
         },
         status: {
             type: String,
-            enum: ['pending', 'completed', 'cancelled'],
+            enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
             default: 'pending',
         },
         notes: {

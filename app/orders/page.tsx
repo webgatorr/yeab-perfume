@@ -14,6 +14,7 @@ import {
     Edit,
     Trash2,
     Loader2,
+    Eye,
 } from 'lucide-react';
 
 import { Button } from "@/components/ui/button"
@@ -183,7 +184,9 @@ function OrdersContent() {
                                     >
                                         <option value="">All Statuses</option>
                                         <option value="pending">Pending</option>
-                                        <option value="completed">Completed</option>
+                                        <option value="processing">Processing</option>
+                                        <option value="shipped">Shipped</option>
+                                        <option value="delivered">Delivered</option>
                                         <option value="cancelled">Cancelled</option>
                                     </select>
                                 </div>
@@ -241,7 +244,11 @@ function OrdersContent() {
                                     </TableRow>
                                 ) : (
                                     orders.map((order: any) => (
-                                        <TableRow key={order._id}>
+                                        <TableRow
+                                            key={order._id}
+                                            className="cursor-pointer"
+                                            onClick={() => router.push(`/orders/${order._id}`)}
+                                        >
                                             <TableCell className="font-medium">#{order.orderNumber}</TableCell>
                                             <TableCell className="text-slate-500">
                                                 {new Date(order.date).toLocaleDateString()}
@@ -256,15 +263,22 @@ function OrdersContent() {
                                             </TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors
-                                                    ${order.status === 'completed' ? 'bg-green-50 text-green-700' :
-                                                        order.status === 'cancelled' ? 'bg-red-50 text-red-700' :
-                                                            'bg-yellow-50 text-yellow-700'}`}>
-                                                    {order.status}
+                                                    ${order.status === 'delivered' ? 'bg-green-50 text-green-700' :
+                                                        order.status === 'shipped' ? 'bg-yellow-50 text-yellow-700' :
+                                                            order.status === 'processing' ? 'bg-purple-50 text-purple-700' :
+                                                                order.status === 'cancelled' ? 'bg-red-50 text-red-700' :
+                                                                    'bg-blue-50 text-blue-700'}`}>
+                                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                 </span>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
+                                                <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                                     <Link href={`/orders/${order._id}`}>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                            <Eye className="h-4 w-4" />
+                                                        </Button>
+                                                    </Link>
+                                                    <Link href={`/orders/${order._id}/edit`}>
                                                         <Button variant="ghost" size="icon" className="h-8 w-8">
                                                             <Edit className="h-4 w-4" />
                                                         </Button>

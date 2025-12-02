@@ -339,20 +339,20 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                         />
                     </div>
 
-                    {orderId && (
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700">Status</label>
-                            <select
-                                value={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                className="w-full"
-                            >
-                                <option value="pending">Pending</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                    )}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">Order Status</label>
+                        <select
+                            value={formData.status}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            className="w-full"
+                        >
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
 
                     <div className="md:col-span-2 space-y-2">
                         <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
