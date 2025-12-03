@@ -42,7 +42,7 @@ export default function HomePage() {
 
       const orders = ordersData.orders || [];
       const pending = orders.filter((o: any) => o.status === 'pending').length;
-      const completed = orders.filter((o: any) => o.status === 'completed').length;
+      const completed = orders.filter((o: any) => o.status === 'delivered').length;
 
       const now = new Date();
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -96,7 +96,7 @@ export default function HomePage() {
       title: 'Completed Orders',
       value: stats.completedOrders,
       icon: CheckCircle,
-      href: '/orders?status=completed',
+      href: '/orders?status=delivered',
     },
     {
       title: 'Monthly Income',
