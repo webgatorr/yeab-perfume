@@ -55,13 +55,16 @@ function OrdersContent() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
+
+    // Initialize state from URL params
+    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
     const [filters, setFilters] = useState({
-        search: '',
-        status: '',
-        emirate: '',
-        orderTaker: '',
+        search: searchParams.get('search') || '',
+        status: searchParams.get('status') || '',
+        emirate: searchParams.get('emirate') || '',
+        orderTaker: searchParams.get('orderTaker') || '',
     });
+
     const [showFilters, setShowFilters] = useState(false);
     const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; orderId: string | null }>({
         isOpen: false,
@@ -69,25 +72,71 @@ function OrdersContent() {
     });
     const [deleting, setDeleting] = useState(false);
 
+    // Sync state with URL params when they change (e.g. back button)
+    useEffect(() => {
+        setCurrentPage(parseInt(searchParams.get('page') || '1'));
+        setFilters({
+            search: searchParams.get('search') || '',
+            status: searchParams.get('status') || '',
+            emirate: searchParams.get('emirate') || '',
+            orderTaker: searchParams.get('orderTaker') || '',
+        });
+    }, [searchParams]);
+
+    // Debounce search input to update URL
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            updateUrl(filters.search, filters.status, filters.emirate, filters.orderTaker, currentPage);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [filters.search]);
+
+    // Immediate update for other filters
+    const handleFilterChange = (key: string, value: string) => {
+        const newFilters = { ...filters, [key]: value };
+        setFilters(newFilters);
+        // Reset to page 1 on filter change
+        updateUrl(newFilters.search, newFilters.status, newFilters.emirate, newFilters.orderTaker, 1);
+    };
+
+    const updateUrl = (search: string, status: string, emirate: string, orderTaker: string, page: number) => {
+        const params = new URLSearchParams();
+        if (page > 1) params.append('page', page.toString());
+        if (search) params.append('search', search);
+        if (status) params.append('status', status);
+        if (emirate) params.append('emirate', emirate);
+        if (orderTaker) params.append('orderTaker', orderTaker);
+
+        // Only push if the URL is actually different to avoid duplicate history entries
+        const currentString = searchParams.toString();
+        const newString = params.toString();
+
+        if (currentString !== newString) {
+            router.push(`/orders?${newString}`);
+        }
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
+        updateUrl(filters.search, filters.status, filters.emirate, filters.orderTaker, newPage);
+    };
+
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/login');
         } else if (status === 'authenticated') {
             fetchOrders();
         }
-    }, [status, router, searchParams, currentPage]);
+    }, [status, router, searchParams]);
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams();
-            params.append('page', currentPage.toString());
-            params.append('limit', '14');
-
-            if (filters.search) params.append('search', filters.search);
-            if (filters.status) params.append('status', filters.status);
-            if (filters.emirate) params.append('emirate', filters.emirate);
-            if (filters.orderTaker) params.append('orderTaker', filters.orderTaker);
+            // Always fetch based on current URL params
+            const params = new URLSearchParams(searchParams.toString());
+            if (!params.has('limit')) params.append('limit', '14');
+            if (!params.has('page')) params.append('page', '1');
 
             const res = await fetch(`/api/orders?${params.toString()}`);
             const data = await res.json();
@@ -102,12 +151,6 @@ function OrdersContent() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        setCurrentPage(1);
-        fetchOrders();
     };
 
     const handleDelete = async () => {
@@ -184,7 +227,6 @@ function OrdersContent() {
                                 className="pl-10"
                                 value={filters.search}
                                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                                onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
                             />
                         </div>
                         <Button
@@ -193,9 +235,6 @@ function OrdersContent() {
                         >
                             <Filter className="w-4 h-4 mr-2" />
                             Filter
-                        </Button>
-                        <Button variant="secondary" onClick={handleSearch}>
-                            Search
                         </Button>
                     </div>
 
@@ -207,7 +246,7 @@ function OrdersContent() {
                                     <select
                                         className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         value={filters.status}
-                                        onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                                        onChange={(e) => handleFilterChange('status', e.target.value)}
                                     >
                                         <option value="">All Statuses</option>
                                         <option value="pending">Pending</option>
@@ -222,7 +261,7 @@ function OrdersContent() {
                                     <select
                                         className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         value={filters.emirate}
-                                        onChange={(e) => setFilters({ ...filters, emirate: e.target.value })}
+                                        onChange={(e) => handleFilterChange('emirate', e.target.value)}
                                     >
                                         <option value="">All Emirates</option>
                                         {UAE_EMIRATES.map((e) => (
@@ -236,7 +275,7 @@ function OrdersContent() {
                                         type="text"
                                         placeholder="Order Taker name"
                                         value={filters.orderTaker}
-                                        onChange={(e) => setFilters({ ...filters, orderTaker: e.target.value })}
+                                        onChange={(e) => handleFilterChange('orderTaker', e.target.value)}
                                     />
                                 </div>
                             </CardContent>
@@ -333,7 +372,7 @@ function OrdersContent() {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                             disabled={currentPage === 1}
                         >
                             <ChevronLeft className="h-4 w-4" />
@@ -345,7 +384,7 @@ function OrdersContent() {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                             disabled={currentPage === totalPages}
                         >
                             <ChevronRight className="h-4 w-4" />
