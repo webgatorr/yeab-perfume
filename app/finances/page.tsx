@@ -4,16 +4,9 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
-import {
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from 'recharts';
+import { toast } from 'sonner';
+import { TransactionDetailModal } from '@/components/finances/TransactionDetailModal';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
     DollarSign,
     TrendingUp,
@@ -42,6 +35,12 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import {
+    ChartConfig,
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@/components/ui/chart"
 
 export default function FinancesPage() {
     const { data: session, status } = useSession();
@@ -57,6 +56,9 @@ export default function FinancesPage() {
         description: '',
         date: new Date().toISOString().split('T')[0],
     });
+    const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -100,6 +102,8 @@ export default function FinancesPage() {
         e.preventDefault();
         setLoading(true);
 
+        const loadingToast = toast.loading('Adding transaction...');
+
         try {
             const res = await fetch('/api/transactions', {
                 method: 'POST',
@@ -111,6 +115,10 @@ export default function FinancesPage() {
             });
 
             if (res.ok) {
+                toast.success('Transaction added successfully!', {
+                    id: loadingToast,
+                    description: 'Your financial record has been updated.',
+                });
                 setFormData({
                     type: 'income',
                     amount: '',
@@ -119,11 +127,55 @@ export default function FinancesPage() {
                     date: new Date().toISOString().split('T')[0],
                 });
                 fetchData();
+            } else {
+                const error = await res.json();
+                toast.error('Failed to add transaction', {
+                    id: loadingToast,
+                    description: error.message || 'Please check your input and try again.',
+                });
             }
         } catch (error) {
             console.error('Error saving transaction:', error);
+            toast.error('An error occurred', {
+                id: loadingToast,
+                description: 'Please try again later.',
+            });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteTransaction = async (id: string) => {
+        setDeleting(true);
+        const loadingToast = toast.loading('Deleting transaction...');
+
+        try {
+            const res = await fetch(`/api/transactions/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (res.ok) {
+                toast.success('Transaction deleted successfully', {
+                    id: loadingToast,
+                    description: 'The transaction has been removed.',
+                });
+                setIsModalOpen(false);
+                setSelectedTransaction(null);
+                fetchData();
+            } else {
+                toast.error('Failed to delete transaction', {
+                    id: loadingToast,
+                    description: 'Please try again later.',
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting transaction:', error);
+            toast.error('An error occurred', {
+                id: loadingToast,
+                description: 'Please try again later.',
+            });
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -152,6 +204,17 @@ export default function FinancesPage() {
         return acc;
     }, []) || [];
 
+    const chartConfig = {
+        income: {
+            label: "Income",
+            color: "#16a34a", // green-600
+        },
+        expense: {
+            label: "Expense",
+            color: "#dc2626", // red-600
+        },
+    } satisfies ChartConfig;
+
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
@@ -163,13 +226,13 @@ export default function FinancesPage() {
                 </div>
 
                 {/* Summary Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-3 gap-4 mb-8">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-slate-500">Total Income</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-slate-500" />
+                            <CardTitle className="text-xs font-medium text-slate-500">Total Income</CardTitle>
+                            <TrendingUp className="h-4 w-4 text-green-600" />
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="pb-4">
                             <div className="text-2xl font-bold text-slate-900">
                                 AED {stats?.summary?.totalIncome?.toLocaleString() || '0'}
                             </div>
@@ -178,10 +241,10 @@ export default function FinancesPage() {
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-slate-500">Total Expenses</CardTitle>
-                            <TrendingDown className="h-4 w-4 text-slate-500" />
+                            <CardTitle className="text-xs font-medium text-slate-500">Total Expenses</CardTitle>
+                            <TrendingDown className="h-4 w-4 text-red-600" />
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="pb-4">
                             <div className="text-2xl font-bold text-slate-900">
                                 AED {stats?.summary?.totalExpense?.toLocaleString() || '0'}
                             </div>
@@ -190,10 +253,10 @@ export default function FinancesPage() {
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-slate-500">Net Profit</CardTitle>
-                            <Wallet className="h-4 w-4 text-slate-500" />
+                            <CardTitle className="text-xs font-medium text-slate-500">Net Profit</CardTitle>
+                            <Wallet className="h-4 w-4 text-blue-600" />
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="pb-4">
                             <div className="text-2xl font-bold text-slate-900">
                                 AED {stats?.summary?.netProfit?.toLocaleString() || '0'}
                             </div>
@@ -205,32 +268,31 @@ export default function FinancesPage() {
                     {/* Transaction Form */}
                     <Card className="lg:col-span-1">
                         <CardHeader>
-                            <div className="flex items-center gap-2">
-                                <Plus className="h-5 w-5 text-slate-900" />
-                                <CardTitle>Add Transaction</CardTitle>
-                            </div>
+                            <CardTitle>Add Transaction</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-2">
                                     <Label>Type</Label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <Button
-                                            type="button"
-                                            variant={formData.type === 'income' ? 'default' : 'secondary'}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div
                                             onClick={() => setFormData({ ...formData, type: 'income' })}
-                                            className="w-full"
+                                            className={`cursor-pointer text-center p-2 rounded-md border transition-all ${formData.type === 'income'
+                                                ? 'bg-slate-900 text-white border-slate-900'
+                                                : 'bg-slate-50 text-slate-900 border-slate-200 hover:bg-slate-100'
+                                                }`}
                                         >
                                             Income
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            variant={formData.type === 'expense' ? 'default' : 'secondary'}
+                                        </div>
+                                        <div
                                             onClick={() => setFormData({ ...formData, type: 'expense' })}
-                                            className="w-full"
+                                            className={`cursor-pointer text-center p-2 rounded-md border transition-all ${formData.type === 'expense'
+                                                ? 'bg-slate-900 text-white border-slate-900'
+                                                : 'bg-slate-50 text-slate-900 border-slate-200 hover:bg-slate-100'
+                                                }`}
                                         >
                                             Expense
-                                        </Button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -303,37 +365,21 @@ export default function FinancesPage() {
                                 <CardTitle>Monthly Trends</CardTitle>
                             </CardHeader>
                             <CardContent className="h-[320px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={monthlyData}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                <ChartContainer config={chartConfig} className="h-full w-full">
+                                    <BarChart accessibilityLayer data={monthlyData}>
+                                        <CartesianGrid vertical={false} />
                                         <XAxis
                                             dataKey="month"
-                                            stroke="#64748b"
-                                            fontSize={12}
                                             tickLine={false}
+                                            tickMargin={10}
                                             axisLine={false}
+                                            tickFormatter={(value) => value.slice(0, 3)}
                                         />
-                                        <YAxis
-                                            stroke="#64748b"
-                                            fontSize={12}
-                                            tickLine={false}
-                                            axisLine={false}
-                                            tickFormatter={(value) => `AED ${value}`}
-                                        />
-                                        <Tooltip
-                                            cursor={{ fill: '#f1f5f9' }}
-                                            contentStyle={{
-                                                backgroundColor: '#fff',
-                                                borderRadius: '8px',
-                                                border: '1px solid #e2e8f0',
-                                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                                            }}
-                                        />
-                                        <Legend />
-                                        <Bar dataKey="income" name="Income" fill="#0f172a" radius={[4, 4, 0, 0]} />
-                                        <Bar dataKey="expense" name="Expense" fill="#94a3b8" radius={[4, 4, 0, 0]} />
+                                        <ChartTooltip content={<ChartTooltipContent />} />
+                                        <Bar dataKey="income" fill="var(--color-income)" radius={4} />
+                                        <Bar dataKey="expense" fill="var(--color-expense)" radius={4} />
                                     </BarChart>
-                                </ResponsiveContainer>
+                                </ChartContainer>
                             </CardContent>
                         </Card>
                     </div>
@@ -352,7 +398,14 @@ export default function FinancesPage() {
                         </TableHeader>
                         <TableBody>
                             {transactions.map((t: any) => (
-                                <TableRow key={t._id}>
+                                <TableRow
+                                    key={t._id}
+                                    className="cursor-pointer hover:bg-slate-50"
+                                    onClick={() => {
+                                        setSelectedTransaction(t);
+                                        setIsModalOpen(true);
+                                    }}
+                                >
                                     <TableCell className="text-slate-500">
                                         {new Date(t.date).toLocaleDateString()}
                                     </TableCell>
@@ -375,6 +428,18 @@ export default function FinancesPage() {
                     </Table>
                 </div>
             </main>
+
+            {/* Transaction Detail Modal */}
+            <TransactionDetailModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedTransaction(null);
+                }}
+                transaction={selectedTransaction}
+                onDelete={handleDeleteTransaction}
+                deleting={deleting}
+            />
         </div>
     );
 }

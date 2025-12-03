@@ -133,7 +133,7 @@ yeab-perfume/
   - Order number
   - Phone numbers
   - Perfume type
-  - Custom text content
+  -    content
 - Apply filters for status and location
 
 ## License

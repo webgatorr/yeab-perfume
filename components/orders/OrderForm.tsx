@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import {
     Loader2,
     Calendar,
@@ -56,6 +57,8 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
         e.preventDefault();
         setLoading(true);
 
+        const loadingToast = toast.loading(orderId ? 'Updating order...' : 'Creating order...');
+
         try {
             const url = orderId ? `/api/orders/${orderId}` : '/api/orders';
             const method = orderId ? 'PUT' : 'POST';
@@ -67,14 +70,28 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
             });
 
             if (response.ok) {
-                router.push('/orders');
-                router.refresh();
+                toast.success(orderId ? 'Order updated successfully!' : 'Order created successfully!', {
+                    id: loadingToast,
+                    description: orderId ? 'The order has been updated.' : 'The order has been created.',
+                });
+
+                setTimeout(() => {
+                    router.push('/orders');
+                    router.refresh();
+                }, 500);
             } else {
-                alert('Failed to save order');
+                const error = await response.json();
+                toast.error('Failed to save order', {
+                    id: loadingToast,
+                    description: error.message || 'Please check your input and try again.',
+                });
             }
         } catch (error) {
             console.error('Error saving order:', error);
-            alert('An error occurred');
+            toast.error('An error occurred', {
+                id: loadingToast,
+                description: 'Please try again later.',
+            });
         } finally {
             setLoading(false);
         }

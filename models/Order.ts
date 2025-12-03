@@ -101,6 +101,11 @@ OrderSchema.index({ orderTaker: 1 });
 OrderSchema.index({ status: 1 });
 OrderSchema.index({ date: -1 });
 
-const Order: Model<IOrder> = models.Order || mongoose.model<IOrder>('Order', OrderSchema);
+// Delete the cached model to ensure we use the updated schema
+if (models.Order) {
+    delete models.Order;
+}
+
+const Order: Model<IOrder> = mongoose.model<IOrder>('Order', OrderSchema);
 
 export default Order;

@@ -154,28 +154,52 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {statCards.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Link
-                key={stat.title}
-                href={stat.href}
-                className="card hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
-              >
-                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <h3 className="tracking-tight text-sm font-medium text-slate-500">
-                    {stat.title}
-                  </h3>
-                  <Icon className="h-4 w-4 text-slate-500" />
-                </div>
-                <div className="text-2xl font-bold text-slate-900">
-                  {stat.value}
-                </div>
-              </Link>
-            );
-          })}
+        {/* Order Statistics */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Order Statistics</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {statCards.slice(0, 3).map((stat, index) => {
+              const Icon = stat.icon;
+              const iconColors = ['text-blue-600', 'text-yellow-600', 'text-green-600'];
+              return (
+                <Link
+                  key={stat.title}
+                  href={stat.href}
+                  className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
+                >
+                  <div>
+                    <p className="text-xs font-medium text-slate-500 mb-1">{stat.title}</p>
+                    <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+                  </div>
+                  <Icon className={`h-5 w-5 ${iconColors[index]}`} />
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Financial Overview */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Financial Overview</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {statCards.slice(3).map((stat, index) => {
+              const Icon = stat.icon;
+              const iconColors = ['text-green-600', 'text-red-600', 'text-blue-600'];
+              return (
+                <Link
+                  key={stat.title}
+                  href={stat.href}
+                  className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
+                >
+                  <div>
+                    <p className="text-xs font-medium text-slate-500 mb-1">{stat.title}</p>
+                    <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+                  </div>
+                  <Icon className={`h-5 w-5 ${iconColors[index]}`} />
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* Quick Actions */}

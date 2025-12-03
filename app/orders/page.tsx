@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
     Search,
     Plus,
@@ -61,6 +63,11 @@ function OrdersContent() {
         orderTaker: '',
     });
     const [showFilters, setShowFilters] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; orderId: string | null }>({
+        isOpen: false,
+        orderId: null,
+    });
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -89,6 +96,9 @@ function OrdersContent() {
             setTotalPages(data.totalPages);
         } catch (error) {
             console.error('Error fetching orders:', error);
+            toast.error('Failed to load orders', {
+                description: 'Please refresh the page to try again.',
+            });
         } finally {
             setLoading(false);
         }
@@ -100,21 +110,38 @@ function OrdersContent() {
         fetchOrders();
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this order?')) return;
+    const handleDelete = async () => {
+        if (!deleteDialog.orderId) return;
+
+        setDeleting(true);
+        const loadingToast = toast.loading('Deleting order...');
 
         try {
-            const res = await fetch(`/api/orders/${id}`, {
+            const res = await fetch(`/api/orders/${deleteDialog.orderId}`, {
                 method: 'DELETE',
             });
 
             if (res.ok) {
+                toast.success('Order deleted successfully', {
+                    id: loadingToast,
+                    description: 'The order has been removed from the system.',
+                });
+                setDeleteDialog({ isOpen: false, orderId: null });
                 fetchOrders();
             } else {
-                alert('Failed to delete order');
+                toast.error('Failed to delete order', {
+                    id: loadingToast,
+                    description: 'Please try again later.',
+                });
             }
         } catch (error) {
             console.error('Error deleting order:', error);
+            toast.error('An error occurred', {
+                id: loadingToast,
+                description: 'Please try again later.',
+            });
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -287,7 +314,7 @@ function OrdersContent() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                        onClick={() => handleDelete(order._id)}
+                                                        onClick={() => setDeleteDialog({ isOpen: true, orderId: order._id })}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -326,6 +353,19 @@ function OrdersContent() {
                     </div>
                 </div>
             </main>
+
+            {/* Delete Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={deleteDialog.isOpen}
+                onClose={() => setDeleteDialog({ isOpen: false, orderId: null })}
+                onConfirm={handleDelete}
+                title="Delete Order"
+                description="Are you sure you want to delete this order? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+                loading={deleting}
+            />
         </div>
     );
 }
