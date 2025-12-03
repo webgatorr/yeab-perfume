@@ -34,6 +34,12 @@ export async function GET(request: NextRequest) {
                 { directPhone: { $regex: search, $options: 'i' } },
                 { perfumeChoice: { $regex: search, $options: 'i' } },
                 { customTextContent: { $regex: search, $options: 'i' } },
+                { orderTaker: { $regex: search, $options: 'i' } },
+                { emirate: { $regex: search, $options: 'i' } },
+                { area: { $regex: search, $options: 'i' } },
+                { receiptNumber: { $regex: search, $options: 'i' } },
+                { couponNumber: { $regex: search, $options: 'i' } },
+                { notes: { $regex: search, $options: 'i' } },
             ];
 
             if (!isNaN(searchNumber)) {
@@ -44,7 +50,7 @@ export async function GET(request: NextRequest) {
         // Filters
         if (status) query.status = status;
         if (emirate) query.emirate = emirate;
-        if (orderTaker) query.orderTaker = orderTaker;
+        if (orderTaker) query.orderTaker = { $regex: orderTaker, $options: 'i' };
 
         if (startDate || endDate) {
             query.date = {};

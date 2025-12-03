@@ -82,7 +82,7 @@ function OrdersContent() {
         try {
             const params = new URLSearchParams();
             params.append('page', currentPage.toString());
-            params.append('limit', '10');
+            params.append('limit', '14');
 
             if (filters.search) params.append('search', filters.search);
             if (filters.status) params.append('status', filters.status);
@@ -93,7 +93,7 @@ function OrdersContent() {
             const data = await res.json();
 
             setOrders(data.orders);
-            setTotalPages(data.totalPages);
+            setTotalPages(data.pagination.pages);
         } catch (error) {
             console.error('Error fetching orders:', error);
             toast.error('Failed to load orders', {
