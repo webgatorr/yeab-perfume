@@ -25,6 +25,8 @@ export async function GET(request: NextRequest) {
             if (endDate) query.date.$lte = new Date(endDate);
         }
 
+        const grouping = searchParams.get('grouping') || 'month'; // 'day' or 'month'
+
         // Calculate totals
         const [incomeResult, expenseResult] = await Promise.all([
             Transaction.aggregate([
@@ -53,23 +55,30 @@ export async function GET(request: NextRequest) {
             { $sort: { total: -1 } },
         ]);
 
-        // Get monthly trends (last 6 months)
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        // Get trends based on date range and grouping
+        const dateGroup = grouping === 'day'
+            ? {
+                year: { $year: '$date' },
+                month: { $month: '$date' },
+                day: { $dayOfMonth: '$date' }
+            }
+            : {
+                year: { $year: '$date' },
+                month: { $month: '$date' }
+            };
 
-        const monthlyTrends = await Transaction.aggregate([
-            { $match: { date: { $gte: sixMonthsAgo } } },
+        const trends = await Transaction.aggregate([
+            { $match: query },
             {
                 $group: {
                     _id: {
-                        year: { $year: '$date' },
-                        month: { $month: '$date' },
+                        ...dateGroup,
                         type: '$type',
                     },
                     total: { $sum: '$amount' },
                 },
             },
-            { $sort: { '_id.year': 1, '_id.month': 1 } },
+            { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } },
         ]);
 
         return NextResponse.json({
@@ -79,7 +88,7 @@ export async function GET(request: NextRequest) {
                 netProfit,
             },
             categoryBreakdown,
-            monthlyTrends,
+            trends,
         });
     } catch (error) {
         console.error('Error fetching stats:', error);

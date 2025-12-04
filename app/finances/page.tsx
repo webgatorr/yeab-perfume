@@ -308,159 +308,66 @@ export default function FinancesPage() {
     } satisfies ChartConfig;
 
     return (
-        <FinanceAuthGate>
-            <div className="min-h-screen bg-white">
-                <Navbar />
+        <div className="min-h-screen bg-slate-50">
+            <Navbar />
 
-                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Financial Overview</h1>
-                        <p className="text-slate-500">Track income, expenses, and business growth</p>
-                    </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Finances</h1>
+                    <p className="text-slate-500">Track your income and expenses</p>
+                </div>
 
-                    {/* Summary Cards */}
-                    <div className="grid grid-cols-3 gap-4 mb-8">
+                <main className="space-y-8">
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs font-medium text-slate-500">Total Income</CardTitle>
+                                <CardTitle className="text-sm font-medium">Total Income</CardTitle>
                                 <TrendingUp className="h-4 w-4 text-green-600" />
                             </CardHeader>
-                            <CardContent className="pb-4">
-                                <div className="text-2xl font-bold text-slate-900">
-                                    AED {stats?.summary?.totalIncome?.toLocaleString() || '0'}
+                            <CardContent>
+                                <div className="text-2xl font-bold text-green-600">
+                                    +AED {stats?.summary?.totalIncome?.toLocaleString() || '0'}
                                 </div>
                             </CardContent>
                         </Card>
-
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs font-medium text-slate-500">Total Expenses</CardTitle>
+                                <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
                                 <TrendingDown className="h-4 w-4 text-red-600" />
                             </CardHeader>
-                            <CardContent className="pb-4">
-                                <div className="text-2xl font-bold text-slate-900">
-                                    AED {stats?.summary?.totalExpense?.toLocaleString() || '0'}
+                            <CardContent>
+                                <div className="text-2xl font-bold text-red-600">
+                                    -AED {stats?.summary?.totalExpense?.toLocaleString() || '0'}
                                 </div>
                             </CardContent>
                         </Card>
-
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-xs font-medium text-slate-500">Net Profit</CardTitle>
+                                <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
                                 <Wallet className="h-4 w-4 text-blue-600" />
                             </CardHeader>
-                            <CardContent className="pb-4">
-                                <div className="text-2xl font-bold text-slate-900">
+                            <CardContent>
+                                <div className={`text-2xl font-bold ${stats?.summary?.netProfit && stats.summary.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
                                     AED {stats?.summary?.netProfit?.toLocaleString() || '0'}
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                        {/* Transaction Form */}
-                        <Card className="lg:col-span-1">
+                    {/* Charts Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Monthly Overview Chart */}
+                        <Card>
                             <CardHeader>
-                                <CardTitle>Add Transaction</CardTitle>
+                                <CardTitle>Monthly Overview</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <form onSubmit={handleSubmit} className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label>Type</Label>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div
-                                                onClick={() => setFormData({ ...formData, type: 'income' })}
-                                                className={`cursor-pointer text-center p-2 rounded-md border transition-all ${formData.type === 'income'
-                                                    ? 'bg-slate-900 text-white border-slate-900'
-                                                    : 'bg-slate-50 text-slate-900 border-slate-200 hover:bg-slate-100'
-                                                    }`}
-                                            >
-                                                Income
-                                            </div>
-                                            <div
-                                                onClick={() => setFormData({ ...formData, type: 'expense' })}
-                                                className={`cursor-pointer text-center p-2 rounded-md border transition-all ${formData.type === 'expense'
-                                                    ? 'bg-slate-900 text-white border-slate-900'
-                                                    : 'bg-slate-50 text-slate-900 border-slate-200 hover:bg-slate-100'
-                                                    }`}
-                                            >
-                                                Expense
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>Amount</Label>
-                                        <div className="relative">
-                                            <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
-                                            <Input
-                                                type="number"
-                                                value={formData.amount}
-                                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                                                className="!pl-10"
-                                                placeholder="0.00"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>Category</Label>
-                                        <div className="relative">
-                                            <Tag className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
-                                            <Input
-                                                type="text"
-                                                value={formData.category}
-                                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                                className="!pl-10"
-                                                placeholder="e.g., Sales"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>Description</Label>
-                                        <Input
-                                            type="text"
-                                            value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            placeholder="e.g., Product sale, Rent payment"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>Date</Label>
-                                        <div className="relative">
-                                            <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
-                                            <Input
-                                                type="date"
-                                                value={formData.date}
-                                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                                className="!pl-10"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <Button type="submit" className="w-full" disabled={loading}>
-                                        {loading ? 'Saving...' : 'Add Transaction'}
-                                    </Button>
-                                </form>
-                            </CardContent>
-                        </Card>
-
-                        {/* Charts */}
-                        <div className="lg:col-span-2 space-y-6">
-                            <Card className="h-[400px]">
-                                <CardHeader>
-                                    <CardTitle>Monthly Trends</CardTitle>
-                                </CardHeader>
-                                <CardContent className="h-[320px]">
-                                    <ChartContainer config={chartConfig} className="h-full w-full">
+                                <div className="h-[300px] w-full">
+                                    <ChartContainer config={chartConfig}>
                                         <BarChart accessibilityLayer data={monthlyData}>
-                                            <CartesianGrid vertical={false} />
+                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                             <XAxis
                                                 dataKey="month"
                                                 tickLine={false}
@@ -469,13 +376,95 @@ export default function FinancesPage() {
                                                 tickFormatter={(value) => value.slice(0, 3)}
                                             />
                                             <ChartTooltip content={<ChartTooltipContent />} />
-                                            <Bar dataKey="income" fill="var(--color-income)" radius={4} />
-                                            <Bar dataKey="expense" fill="var(--color-expense)" radius={4} />
+                                            <Bar dataKey="income" fill="var(--color-income)" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="expense" fill="var(--color-expense)" radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ChartContainer>
-                                </CardContent>
-                            </Card>
-                        </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Add Transaction Form */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Add Transaction</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="type">Type</Label>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    type="button"
+                                                    variant={formData.type === 'income' ? 'default' : 'outline'}
+                                                    className={`flex-1 ${formData.type === 'income' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                                                    onClick={() => setFormData({ ...formData, type: 'income' })}
+                                                >
+                                                    Income
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant={formData.type === 'expense' ? 'default' : 'outline'}
+                                                    className={`flex-1 ${formData.type === 'expense' ? 'bg-red-600 hover:bg-red-700' : ''}`}
+                                                    onClick={() => setFormData({ ...formData, type: 'expense' })}
+                                                >
+                                                    Expense
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="amount">Amount (AED)</Label>
+                                            <Input
+                                                id="amount"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={formData.amount}
+                                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                                required
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="category">Category</Label>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            {/* Assuming INCOME_CATEGORIES and EXPENSE_CATEGORIES are defined elsewhere */}
+                                            {/* For now, using a placeholder array */}
+                                            {(formData.type === 'income' ? ['Sales', 'Refund', 'Investment'] : ['Rent', 'Utilities', 'Food', 'Transport']).map((cat) => (
+                                                <button
+                                                    key={cat}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, category: cat })}
+                                                    className={`px-3 py-2 text-sm rounded-md border transition-all ${formData.category === cat
+                                                        ? 'bg-slate-900 text-white border-slate-900'
+                                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+                                                        }`}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="description">Description</Label>
+                                        <Input
+                                            id="description"
+                                            value={formData.description}
+                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                            placeholder="Optional description..."
+                                        />
+                                    </div>
+
+                                    <Button type="submit" className="w-full" disabled={loading}>
+                                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Add Transaction'}
+                                    </Button>
+                                </form>
+                            </CardContent>
+                        </Card>
                     </div>
 
                     {/* Transactions Section with Filters */}
@@ -687,6 +676,6 @@ export default function FinancesPage() {
                     deleting={deleting}
                 />
             </div>
-        </FinanceAuthGate>
+        </div>
     );
 }

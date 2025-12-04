@@ -115,10 +115,15 @@ export default function InventoryPage() {
         if (status === 'unauthenticated') {
             router.push('/login');
         } else if (status === 'authenticated') {
+            if (session?.user?.role !== 'admin') {
+                router.push('/');
+                toast.error('Unauthorized access');
+                return;
+            }
             fetchPerfumes();
             fetchRecentShipments();
         }
-    }, [status, router]);
+    }, [status, router, session]);
 
     const fetchPerfumes = async () => {
         try {

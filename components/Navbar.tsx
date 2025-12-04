@@ -16,9 +16,14 @@ export default function Navbar() {
     const navigation = [
         { name: 'Dashboard', href: '/', icon: LayoutDashboard },
         { name: 'Orders', href: '/orders', icon: Package },
-        { name: 'Inventory', href: '/inventory', icon: Boxes },
-        { name: 'Finances', href: '/finances', icon: DollarSign },
     ];
+
+    if (session.user.role === 'admin') {
+        navigation.push(
+            { name: 'Inventory', href: '/inventory', icon: Boxes },
+            { name: 'Finances', href: '/finances', icon: DollarSign }
+        );
+    }
 
     return (
         <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">

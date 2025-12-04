@@ -2,57 +2,24 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
-import { Package, Clock, CheckCircle, Plus, Search } from 'lucide-react';
-
-interface Stats {
-  totalOrders: number;
-  pendingOrders: number;
-  completedOrders: number;
-}
+import { Plus, Search } from 'lucide-react';
+import FinancialDashboard from '@/components/dashboard/FinancialDashboard';
+import OrderDashboard from '@/components/dashboard/OrderDashboard';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [stats, setStats] = useState<Stats>({
-    totalOrders: 0,
-    pendingOrders: 0,
-    completedOrders: 0,
-  });
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
-    } else if (status === 'authenticated') {
-      fetchStats();
     }
   }, [status, router]);
 
-  const fetchStats = async () => {
-    try {
-      const ordersRes = await fetch('/api/orders?limit=1000');
-      const ordersData = await ordersRes.json();
-
-      const orders = ordersData.orders || [];
-      const pending = orders.filter((o: any) => o.status === 'pending').length;
-      const completed = orders.filter((o: any) => o.status === 'delivered').length;
-
-      setStats({
-        totalOrders: orders.length,
-        pendingOrders: pending,
-        completedOrders: completed,
-      });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (status === 'loading' || loading) {
+  if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
@@ -63,27 +30,6 @@ export default function HomePage() {
   }
 
   if (!session) return null;
-
-  const statCards = [
-    {
-      title: 'Total Orders',
-      value: stats.totalOrders,
-      icon: Package,
-      href: '/orders',
-    },
-    {
-      title: 'Pending Orders',
-      value: stats.pendingOrders,
-      icon: Clock,
-      href: '/orders?status=pending',
-    },
-    {
-      title: 'Completed Orders',
-      value: stats.completedOrders,
-      icon: CheckCircle,
-      href: '/orders?status=delivered',
-    },
-  ];
 
   const quickActions = [
     {
@@ -115,33 +61,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Order Statistics */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Order Statistics</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {statCards.map((stat, index) => {
-              const Icon = stat.icon;
-              const iconColors = ['text-blue-600', 'text-yellow-600', 'text-green-600'];
-              return (
-                <Link
-                  key={stat.title}
-                  href={stat.href}
-                  className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
-                >
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 mb-1">{stat.title}</p>
-                    <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                  </div>
-                  <Icon className={`h-5 w-5 ${iconColors[index]}`} />
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-
         {/* Quick Actions */}
-        <div>
+        <div className="mb-8">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
             Quick Actions
           </h2>
@@ -165,6 +86,18 @@ export default function HomePage() {
               );
             })}
           </div>
+        </div>
+
+        {/* Financial Overview (Admin Only) */}
+        {session.user.role === 'admin' && (
+          <div className="mb-8">
+            <FinancialDashboard />
+          </div>
+        )}
+
+        {/* Order Statistics (Visible to everyone) */}
+        <div className="mb-8">
+          <OrderDashboard />
         </div>
       </main>
     </div>
