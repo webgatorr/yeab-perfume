@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Menu, X, LayoutDashboard, Package, DollarSign, LogOut } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Package, DollarSign, LogOut, Boxes } from 'lucide-react';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -16,6 +16,7 @@ export default function Navbar() {
     const navigation = [
         { name: 'Dashboard', href: '/', icon: LayoutDashboard },
         { name: 'Orders', href: '/orders', icon: Package },
+        { name: 'Inventory', href: '/inventory', icon: Boxes },
         { name: 'Finances', href: '/finances', icon: DollarSign },
     ];
 
@@ -43,8 +44,8 @@ export default function Navbar() {
                                         key={item.name}
                                         href={item.href}
                                         className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${isActive
-                                                ? 'bg-slate-100 text-slate-900'
-                                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                            ? 'bg-slate-100 text-slate-900'
+                                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
@@ -96,8 +97,8 @@ export default function Navbar() {
                                     href={item.href}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium ${isActive
-                                            ? 'bg-slate-100 text-slate-900'
-                                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                        ? 'bg-slate-100 text-slate-900'
+                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                         }`}
                                 >
                                     <Icon className="w-4 h-4" />
