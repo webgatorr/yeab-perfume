@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import dbConnect from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
 
-// GET - Fetch transactions with filters
+// GET - Fetch transactions with filters, search, and pagination
 export async function GET(request: NextRequest) {
     try {
         const session = await getServerSession();
@@ -17,12 +17,22 @@ export async function GET(request: NextRequest) {
         const type = searchParams.get('type');
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
-        const category = searchParams.get('category');
+        const search = searchParams.get('search');
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = parseInt(searchParams.get('limit') || '20');
 
         const query: any = {};
 
         if (type) query.type = type;
-        if (category) query.category = category;
+
+        // Search by category or description
+        if (search) {
+            const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            query.$or = [
+                { category: { $regex: escapedSearch, $options: 'i' } },
+                { description: { $regex: escapedSearch, $options: 'i' } },
+            ];
+        }
 
         if (startDate || endDate) {
             query.date = {};
@@ -30,11 +40,26 @@ export async function GET(request: NextRequest) {
             if (endDate) query.date.$lte = new Date(endDate);
         }
 
-        const transactions = await Transaction.find(query)
-            .sort({ date: -1 })
-            .lean();
+        const skip = (page - 1) * limit;
 
-        return NextResponse.json(transactions);
+        const [transactions, total] = await Promise.all([
+            Transaction.find(query)
+                .sort({ date: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Transaction.countDocuments(query),
+        ]);
+
+        return NextResponse.json({
+            transactions,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit),
+            },
+        });
     } catch (error) {
         console.error('Error fetching transactions:', error);
         return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });

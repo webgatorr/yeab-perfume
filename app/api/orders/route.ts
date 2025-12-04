@@ -28,18 +28,20 @@ export async function GET(request: NextRequest) {
 
         // Search across multiple fields
         if (search) {
+            // Escape special regex characters to prevent invalid regex errors
+            const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const searchNumber = parseInt(search);
             query.$or = [
-                { whatsappNumber: { $regex: search, $options: 'i' } },
-                { directPhone: { $regex: search, $options: 'i' } },
-                { perfumeChoice: { $regex: search, $options: 'i' } },
-                { customTextContent: { $regex: search, $options: 'i' } },
-                { orderTaker: { $regex: search, $options: 'i' } },
-                { emirate: { $regex: search, $options: 'i' } },
-                { area: { $regex: search, $options: 'i' } },
-                { receiptNumber: { $regex: search, $options: 'i' } },
-                { couponNumber: { $regex: search, $options: 'i' } },
-                { notes: { $regex: search, $options: 'i' } },
+                { whatsappNumber: { $regex: escapedSearch, $options: 'i' } },
+                { directPhone: { $regex: escapedSearch, $options: 'i' } },
+                { perfumeChoice: { $regex: escapedSearch, $options: 'i' } },
+                { customTextContent: { $regex: escapedSearch, $options: 'i' } },
+                { orderTaker: { $regex: escapedSearch, $options: 'i' } },
+                { emirate: { $regex: escapedSearch, $options: 'i' } },
+                { area: { $regex: escapedSearch, $options: 'i' } },
+                { receiptNumber: { $regex: escapedSearch, $options: 'i' } },
+                { couponNumber: { $regex: escapedSearch, $options: 'i' } },
+                { notes: { $regex: escapedSearch, $options: 'i' } },
             ];
 
             if (!isNaN(searchNumber)) {

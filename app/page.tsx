@@ -5,14 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
-import { Package, Clock, CheckCircle, TrendingUp, TrendingDown, DollarSign, Plus, Search, FileText } from 'lucide-react';
+import { Package, Clock, CheckCircle, Plus, Search } from 'lucide-react';
 
 interface Stats {
   totalOrders: number;
   pendingOrders: number;
   completedOrders: number;
-  monthlyIncome: number;
-  monthlyExpense: number;
 }
 
 export default function HomePage() {
@@ -22,8 +20,6 @@ export default function HomePage() {
     totalOrders: 0,
     pendingOrders: 0,
     completedOrders: 0,
-    monthlyIncome: 0,
-    monthlyExpense: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -44,21 +40,10 @@ export default function HomePage() {
       const pending = orders.filter((o: any) => o.status === 'pending').length;
       const completed = orders.filter((o: any) => o.status === 'delivered').length;
 
-      const now = new Date();
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-      const statsRes = await fetch(
-        `/api/transactions/stats?startDate=${firstDay.toISOString()}&endDate=${lastDay.toISOString()}`
-      );
-      const statsData = await statsRes.json();
-
       setStats({
         totalOrders: orders.length,
         pendingOrders: pending,
         completedOrders: completed,
-        monthlyIncome: statsData.summary?.totalIncome || 0,
-        monthlyExpense: statsData.summary?.totalExpense || 0,
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -98,24 +83,6 @@ export default function HomePage() {
       icon: CheckCircle,
       href: '/orders?status=delivered',
     },
-    {
-      title: 'Monthly Income',
-      value: `AED ${stats.monthlyIncome.toLocaleString()}`,
-      icon: TrendingUp,
-      href: '/finances',
-    },
-    {
-      title: 'Monthly Expense',
-      value: `AED ${stats.monthlyExpense.toLocaleString()}`,
-      icon: TrendingDown,
-      href: '/finances',
-    },
-    {
-      title: 'Net Profit',
-      value: `AED ${(stats.monthlyIncome - stats.monthlyExpense).toLocaleString()}`,
-      icon: DollarSign,
-      href: '/finances',
-    },
   ];
 
   const quickActions = [
@@ -124,12 +91,6 @@ export default function HomePage() {
       description: 'Create a new order',
       icon: Plus,
       href: '/orders/new',
-    },
-    {
-      title: 'Add Transaction',
-      description: 'Record income/expense',
-      icon: FileText,
-      href: '/finances',
     },
     {
       title: 'Search Orders',
@@ -158,7 +119,7 @@ export default function HomePage() {
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Order Statistics</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {statCards.slice(0, 3).map((stat, index) => {
+            {statCards.map((stat, index) => {
               const Icon = stat.icon;
               const iconColors = ['text-blue-600', 'text-yellow-600', 'text-green-600'];
               return (
@@ -178,36 +139,13 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Financial Overview */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Financial Overview</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {statCards.slice(3).map((stat, index) => {
-              const Icon = stat.icon;
-              const iconColors = ['text-green-600', 'text-red-600', 'text-blue-600'];
-              return (
-                <Link
-                  key={stat.title}
-                  href={stat.href}
-                  className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
-                >
-                  <div>
-                    <p className="text-xs font-medium text-slate-500 mb-1">{stat.title}</p>
-                    <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                  </div>
-                  <Icon className={`h-5 w-5 ${iconColors[index]}`} />
-                </Link>
-              );
-            })}
-          </div>
-        </div>
 
         {/* Quick Actions */}
         <div>
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
             Quick Actions
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
