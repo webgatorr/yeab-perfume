@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import dbConnect from '@/lib/mongodb';
 import Order from '@/models/Order';
 
 // GET - Fetch orders with search and filters
 export async function GET(request: NextRequest) {
     try {
-        const session = await getServerSession();
+        const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
 // POST - Create new order
 export async function POST(request: NextRequest) {
     try {
-        const session = await getServerSession();
+        const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -102,9 +103,12 @@ export async function POST(request: NextRequest) {
         const lastOrder = await Order.findOne().sort({ orderNumber: -1 }).lean();
         const nextOrderNumber = (lastOrder?.orderNumber || 0) + 1;
 
+        // Create order with createdBy field from session
         const order = await Order.create({
             ...body,
             orderNumber: nextOrderNumber,
+            createdBy: session.user.id !== 'env-admin' ? session.user.id : undefined,
+            orderTaker: body.orderTaker || session.user.name,
         });
 
         return NextResponse.json(order, { status: 201 });

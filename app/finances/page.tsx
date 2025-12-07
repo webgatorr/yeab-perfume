@@ -82,13 +82,17 @@ export default function FinancesPage() {
     const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 0 });
     const [transactionsLoading, setTransactionsLoading] = useState(false);
 
+    // Chart month/year selection
+    const [chartMonth, setChartMonth] = useState(new Date().getMonth());
+    const [chartYear, setChartYear] = useState(new Date().getFullYear());
+
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/login');
         } else if (status === 'authenticated') {
             fetchStats();
         }
-    }, [status, router]);
+    }, [status, router, chartMonth, chartYear]);
 
     // Debounce search
     useEffect(() => {
@@ -108,9 +112,8 @@ export default function FinancesPage() {
 
     const fetchStats = async () => {
         try {
-            const now = new Date();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const firstDay = new Date(chartYear, chartMonth, 1);
+            const lastDay = new Date(chartYear, chartMonth + 1, 0);
 
             const statsRes = await fetch(`/api/transactions/stats?startDate=${firstDay.toISOString()}&endDate=${lastDay.toISOString()}`);
             const statsData = await statsRes.json();
@@ -121,6 +124,37 @@ export default function FinancesPage() {
             setLoading(false);
         }
     };
+
+    const goToPreviousMonth = () => {
+        if (chartMonth === 0) {
+            setChartMonth(11);
+            setChartYear(chartYear - 1);
+        } else {
+            setChartMonth(chartMonth - 1);
+        }
+    };
+
+    const goToNextMonth = () => {
+        const now = new Date();
+        const isCurrentMonth = chartMonth === now.getMonth() && chartYear === now.getFullYear();
+        if (isCurrentMonth) return; // Don't go beyond current month
+
+        if (chartMonth === 11) {
+            setChartMonth(0);
+            setChartYear(chartYear + 1);
+        } else {
+            setChartMonth(chartMonth + 1);
+        }
+    };
+
+    const goToCurrentMonth = () => {
+        const now = new Date();
+        setChartMonth(now.getMonth());
+        setChartYear(now.getFullYear());
+    };
+
+    const isCurrentMonth = chartMonth === new Date().getMonth() && chartYear === new Date().getFullYear();
+    const chartMonthName = new Date(chartYear, chartMonth).toLocaleDateString('en', { month: 'long', year: 'numeric' });
 
     const fetchTransactions = async () => {
         setTransactionsLoading(true);
@@ -281,7 +315,7 @@ export default function FinancesPage() {
 
     if (!session) return null;
 
-    const monthlyData = stats?.monthlyTrends?.reduce((acc: any[], item: any) => {
+    const monthlyData = stats?.trends?.reduce((acc: any[], item: any) => {
         const monthName = new Date(item._id.year, item._id.month - 1).toLocaleDateString('en', { month: 'short' });
         const existing = acc.find(d => d.month === monthName);
 
@@ -360,27 +394,68 @@ export default function FinancesPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Monthly Overview Chart */}
                         <Card>
-                            <CardHeader>
-                                <CardTitle>Monthly Overview</CardTitle>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <div>
+                                    <CardTitle>Monthly Overview</CardTitle>
+                                    <p className="text-sm text-muted-foreground mt-1">{chartMonthName}</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        onClick={goToPreviousMonth}
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={goToCurrentMonth}
+                                        disabled={isCurrentMonth}
+                                        className="text-xs"
+                                    >
+                                        Today
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        onClick={goToNextMonth}
+                                        disabled={isCurrentMonth}
+                                    >
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[300px] w-full">
-                                    <ChartContainer config={chartConfig}>
-                                        <BarChart accessibilityLayer data={monthlyData}>
-                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                            <XAxis
-                                                dataKey="month"
-                                                tickLine={false}
-                                                tickMargin={10}
-                                                axisLine={false}
-                                                tickFormatter={(value) => value.slice(0, 3)}
-                                            />
-                                            <ChartTooltip content={<ChartTooltipContent />} />
-                                            <Bar dataKey="income" fill="var(--color-income)" radius={[4, 4, 0, 0]} />
-                                            <Bar dataKey="expense" fill="var(--color-expense)" radius={[4, 4, 0, 0]} />
-                                        </BarChart>
-                                    </ChartContainer>
-                                </div>
+                                {monthlyData && monthlyData.length > 0 ? (
+                                    <div className="h-[300px] w-full">
+                                        <ChartContainer config={chartConfig}>
+                                            <BarChart accessibilityLayer data={monthlyData}>
+                                                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                                <XAxis
+                                                    dataKey="month"
+                                                    tickLine={false}
+                                                    tickMargin={10}
+                                                    axisLine={false}
+                                                    tickFormatter={(value) => value.slice(0, 3)}
+                                                />
+                                                <ChartTooltip content={<ChartTooltipContent />} />
+                                                <Bar dataKey="income" fill="var(--color-income)" radius={[4, 4, 0, 0]} />
+                                                <Bar dataKey="expense" fill="var(--color-expense)" radius={[4, 4, 0, 0]} />
+                                            </BarChart>
+                                        </ChartContainer>
+                                    </div>
+                                ) : (
+                                    <div className="h-[300px] w-full flex items-center justify-center">
+                                        <div className="text-center text-muted-foreground">
+                                            <Wallet className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                                            <p>No transactions for {chartMonthName}</p>
+                                            <p className="text-sm">Add a transaction to see the chart</p>
+                                        </div>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
 

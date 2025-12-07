@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Menu, X, LayoutDashboard, Package, DollarSign, LogOut, Boxes } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Package, DollarSign, LogOut, Boxes, Settings } from 'lucide-react';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -21,7 +21,8 @@ export default function Navbar() {
     if (session.user.role === 'admin') {
         navigation.push(
             { name: 'Inventory', href: '/inventory', icon: Boxes },
-            { name: 'Finances', href: '/finances', icon: DollarSign }
+            { name: 'Finances', href: '/finances', icon: DollarSign },
+            { name: 'Settings', href: '/settings', icon: Settings }
         );
     }
 

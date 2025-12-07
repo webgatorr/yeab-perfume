@@ -1,5 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import dbConnect from '@/lib/mongodb';
+import User from '@/models/User';
 
 declare module 'next-auth' {
     interface Session {
@@ -9,20 +11,23 @@ declare module 'next-auth' {
             email?: string | null;
             image?: string | null;
             role?: 'admin' | 'staff';
+            username?: string;
         };
     }
     interface User {
         role?: 'admin' | 'staff';
+        username?: string;
     }
 }
 
 declare module 'next-auth/jwt' {
     interface JWT {
         role?: 'admin' | 'staff';
+        username?: string;
     }
 }
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: 'Credentials',
@@ -35,37 +40,53 @@ const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-                const adminPassword = process.env.ADMIN_PASSWORD || 'yeab2024';
+                try {
+                    await dbConnect();
 
-                const staffUsername = process.env.STAFF_USERNAME || 'staff';
-                const staffPassword = process.env.STAFF_PASSWORD || 'staff2024';
+                    // Find user by username
+                    const user = await User.findOne({
+                        username: credentials.username.toLowerCase(),
+                        isActive: true,
+                    });
 
-                if (
-                    credentials.username === adminUsername &&
-                    credentials.password === adminPassword
-                ) {
+                    if (!user) {
+                        // Fallback to environment variables for initial admin setup
+                        const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+                        const adminPassword = process.env.ADMIN_PASSWORD || 'yeab2024';
+
+                        if (
+                            credentials.username === adminUsername &&
+                            credentials.password === adminPassword
+                        ) {
+                            return {
+                                id: 'env-admin',
+                                name: 'Owner',
+                                email: 'admin@yeabperfume.com',
+                                role: 'admin',
+                                username: adminUsername,
+                            };
+                        }
+                        return null;
+                    }
+
+                    // Compare password
+                    const isPasswordValid = await user.comparePassword(credentials.password);
+
+                    if (!isPasswordValid) {
+                        return null;
+                    }
+
                     return {
-                        id: '1',
-                        name: 'Owner',
-                        email: 'admin@yeabperfume.com',
-                        role: 'admin',
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email || '',
+                        role: user.role,
+                        username: user.username,
                     };
+                } catch (error) {
+                    console.error('Auth error:', error);
+                    return null;
                 }
-
-                if (
-                    credentials.username === staffUsername &&
-                    credentials.password === staffPassword
-                ) {
-                    return {
-                        id: '2',
-                        name: 'Staff',
-                        email: 'staff@yeabperfume.com',
-                        role: 'staff',
-                    };
-                }
-
-                return null;
             },
         }),
     ],
@@ -80,6 +101,7 @@ const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
+                token.username = user.username;
             }
             return token;
         },
@@ -87,6 +109,7 @@ const authOptions: NextAuthOptions = {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role;
+                session.user.username = token.username;
             }
             return session;
         },

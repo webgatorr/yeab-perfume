@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import {
     Loader2,
@@ -13,7 +14,8 @@ import {
     FileText,
     Hash,
     Ticket,
-    MessageSquare
+    MessageSquare,
+    DollarSign
 } from 'lucide-react';
 
 const UAE_EMIRATES = [
@@ -33,6 +35,7 @@ interface OrderFormProps {
 
 export default function OrderForm({ initialData, orderId }: OrderFormProps) {
     const router = useRouter();
+    const { data: session } = useSession();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         date: initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
@@ -41,6 +44,7 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
         hasCustomImage: initialData?.hasCustomImage || false,
         customTextContent: initialData?.customTextContent || '',
         amount: initialData?.amount || 1,
+        price: initialData?.price || '',
         perfumeChoice: initialData?.perfumeChoice || '',
         emirate: initialData?.emirate || '',
         area: initialData?.area || '',
@@ -52,6 +56,13 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
         status: initialData?.status || 'pending',
         notes: initialData?.notes || '',
     });
+
+    // Auto-set order taker from session when creating new order
+    useEffect(() => {
+        if (!orderId && session?.user?.name && !formData.orderTaker) {
+            setFormData(prev => ({ ...prev, orderTaker: session.user.name || '' }));
+        }
+    }, [session, orderId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -155,16 +166,14 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
                             <User className="h-3.5 w-3.5 text-slate-500" />
-                            Order Taker *
+                            Order Taker
                         </label>
-                        <input
-                            type="text"
-                            value={formData.orderTaker}
-                            onChange={(e) => setFormData({ ...formData, orderTaker: e.target.value })}
-                            placeholder="Order Taker Name"
-                            required
-                            className="w-full"
-                        />
+                        <div className="flex items-center gap-2">
+                            <div className="flex-1 h-10 px-3 py-2 rounded-md border border-slate-200 bg-slate-50 text-slate-700 text-sm flex items-center">
+                                {formData.orderTaker || session?.user?.name || 'Loading...'}
+                            </div>
+                            <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">Auto-filled</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -194,7 +203,7 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
                                 <Hash className="h-3.5 w-3.5 text-slate-500" />
@@ -206,6 +215,22 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                                 value={formData.amount}
                                 onChange={(e) => setFormData({ ...formData, amount: parseInt(e.target.value) })}
                                 required
+                                className="w-full"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                                <DollarSign className="h-3.5 w-3.5 text-slate-500" />
+                                Price (AED)
+                            </label>
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={formData.price}
+                                onChange={(e) => setFormData({ ...formData, price: e.target.value ? parseFloat(e.target.value) : '' })}
+                                placeholder="0.00"
                                 className="w-full"
                             />
                         </div>

@@ -8,12 +8,14 @@ export interface IOrder {
     hasCustomImage: boolean;
     customTextContent?: string;
     amount: number;
+    price?: number;
     perfumeChoice: string;
     emirate?: string;
     area?: string;
     otherLocation?: string;
     directPhone?: string;
     orderTaker: string;
+    createdBy?: string; // User ID who created the order
     receiptNumber?: string;
     couponNumber?: string;
     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
@@ -54,6 +56,10 @@ const OrderSchema = new Schema<IOrder>(
             required: true,
             min: 1,
         },
+        price: {
+            type: Number,
+            min: 0,
+        },
         perfumeChoice: {
             type: String,
             required: true,
@@ -80,6 +86,10 @@ const OrderSchema = new Schema<IOrder>(
         couponNumber: {
             type: String,
         },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
         status: {
             type: String,
             enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
@@ -100,6 +110,7 @@ OrderSchema.index({ directPhone: 1 });
 OrderSchema.index({ orderTaker: 1 });
 OrderSchema.index({ status: 1 });
 OrderSchema.index({ date: -1 });
+OrderSchema.index({ createdBy: 1 });
 
 // Delete the cached model to ensure we use the updated schema
 if (models.Order) {

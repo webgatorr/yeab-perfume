@@ -19,7 +19,8 @@ import {
     MessageSquare,
     CheckCircle2,
     XCircle,
-    Clock
+    Clock,
+    DollarSign
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -211,12 +212,24 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
                                     <p className="text-slate-900 font-medium text-lg">{order.perfumeChoice}</p>
                                 </div>
 
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                                        <Hash className="h-3.5 w-3.5" />
-                                        Quantity
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                                            <Hash className="h-3.5 w-3.5" />
+                                            Quantity
+                                        </div>
+                                        <p className="text-slate-900 font-medium">{order.amount}</p>
                                     </div>
-                                    <p className="text-slate-900 font-medium">{order.amount}</p>
+
+                                    {order.price !== undefined && order.price !== null && (
+                                        <div className="space-y-1">
+                                            <div className="flex items-center gap-2 text-sm text-slate-500">
+                                                <DollarSign className="h-3.5 w-3.5" />
+                                                Price
+                                            </div>
+                                            <p className="text-slate-900 font-semibold text-lg">AED {order.price.toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {(order.hasCustomText || order.hasCustomImage) && (
