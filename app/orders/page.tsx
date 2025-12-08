@@ -291,6 +291,7 @@ function OrdersContent() {
                                     <TableHead>Date</TableHead>
                                     <TableHead>Customer</TableHead>
                                     <TableHead>Product</TableHead>
+                                    <TableHead>Price</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
@@ -298,13 +299,13 @@ function OrdersContent() {
                             <TableBody>
                                 {loading ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center">
+                                        <TableCell colSpan={7} className="h-24 text-center">
                                             <Loader2 className="mx-auto h-6 w-6 animate-spin text-slate-400" />
                                         </TableCell>
                                     </TableRow>
                                 ) : orders.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center text-slate-500">
+                                        <TableCell colSpan={7} className="h-24 text-center text-slate-500">
                                             No orders found.
                                         </TableCell>
                                     </TableRow>
@@ -326,6 +327,9 @@ function OrdersContent() {
                                             <TableCell className="text-slate-500">
                                                 {order.perfumeChoice}
                                                 <span className="ml-2 text-xs text-slate-400">x{order.amount}</span>
+                                            </TableCell>
+                                            <TableCell className="font-medium">
+                                                {order.price ? `AED ${order.price.toLocaleString()}` : '-'}
                                             </TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors
