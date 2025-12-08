@@ -2,18 +2,14 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
 import { toast } from 'sonner';
 import { TransactionDetailModal } from '@/components/finances/TransactionDetailModal';
 import FinanceAuthGate from '@/components/finances/FinanceAuthGate';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
-    DollarSign,
     TrendingUp,
     TrendingDown,
-    Calendar,
-    Tag,
     Loader2,
     Wallet,
     Search,
@@ -39,12 +35,6 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart"
 import {
     Select,
     SelectContent,
@@ -103,12 +93,51 @@ export default function FinancesPage() {
         return () => clearTimeout(timer);
     }, [search]);
 
+    const fetchTransactions = useCallback(async () => {
+        if (status !== 'authenticated') return;
+
+        setTransactionsLoading(true);
+        try {
+            const params = new URLSearchParams();
+            params.set('page', currentPage.toString());
+            params.set('limit', '20');
+            if (debouncedSearch) params.set('search', debouncedSearch);
+            if (typeFilter) params.set('type', typeFilter);
+            if (startDate) {
+                // Set start date to beginning of day
+                const start = new Date(startDate);
+                start.setHours(0, 0, 0, 0);
+                params.set('startDate', start.toISOString());
+            }
+            if (endDate) {
+                // Set end date to end of day
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999);
+                params.set('endDate', end.toISOString());
+            }
+
+            const res = await fetch(`/api/transactions?${params.toString()}`);
+            const data = await res.json();
+
+            if (data.transactions) {
+                setTransactions(data.transactions);
+                setPagination(data.pagination);
+            } else {
+                setTransactions([]);
+                setPagination({ page: 1, limit: 20, total: 0, pages: 0 });
+            }
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+            setTransactions([]);
+        } finally {
+            setTransactionsLoading(false);
+        }
+    }, [status, currentPage, debouncedSearch, typeFilter, startDate, endDate]);
+
     // Refetch transactions when filters or page changes
     useEffect(() => {
-        if (status === 'authenticated') {
-            fetchTransactions();
-        }
-    }, [debouncedSearch, typeFilter, startDate, endDate, currentPage]);
+        fetchTransactions();
+    }, [fetchTransactions]);
 
     const fetchStats = async () => {
         try {
@@ -136,8 +165,8 @@ export default function FinancesPage() {
 
     const goToNextMonth = () => {
         const now = new Date();
-        const isCurrentMonth = chartMonth === now.getMonth() && chartYear === now.getFullYear();
-        if (isCurrentMonth) return; // Don't go beyond current month
+        const isCurrentMonthCheck = chartMonth === now.getMonth() && chartYear === now.getFullYear();
+        if (isCurrentMonthCheck) return; // Don't go beyond current month
 
         if (chartMonth === 11) {
             setChartMonth(0);
@@ -155,40 +184,6 @@ export default function FinancesPage() {
 
     const isCurrentMonth = chartMonth === new Date().getMonth() && chartYear === new Date().getFullYear();
     const chartMonthName = new Date(chartYear, chartMonth).toLocaleDateString('en', { month: 'long', year: 'numeric' });
-
-    const fetchTransactions = async () => {
-        setTransactionsLoading(true);
-        try {
-            const params = new URLSearchParams();
-            params.set('page', currentPage.toString());
-            params.set('limit', '20');
-            if (debouncedSearch) params.set('search', debouncedSearch);
-            if (typeFilter) params.set('type', typeFilter);
-            if (startDate) params.set('startDate', new Date(startDate).toISOString());
-            if (endDate) {
-                // Set end date to end of day
-                const end = new Date(endDate);
-                end.setHours(23, 59, 59, 999);
-                params.set('endDate', end.toISOString());
-            }
-
-            const res = await fetch(`/api/transactions?${params.toString()}`);
-            const data = await res.json();
-
-            if (data.transactions) {
-                setTransactions(data.transactions);
-                setPagination(data.pagination);
-            } else {
-                setTransactions([]);
-                setPagination({ page: 1, limit: 20, total: 0, pages: 0 });
-            }
-        } catch (error) {
-            console.error('Error fetching transactions:', error);
-            setTransactions([]);
-        } finally {
-            setTransactionsLoading(false);
-        }
-    };
 
     const handleClearFilters = () => {
         setSearch('');
@@ -315,31 +310,7 @@ export default function FinancesPage() {
 
     if (!session) return null;
 
-    const monthlyData = stats?.trends?.reduce((acc: any[], item: any) => {
-        const monthName = new Date(item._id.year, item._id.month - 1).toLocaleDateString('en', { month: 'short' });
-        const existing = acc.find(d => d.month === monthName);
 
-        if (existing) {
-            existing[item._id.type] = item.total;
-        } else {
-            acc.push({
-                month: monthName,
-                [item._id.type]: item.total,
-            });
-        }
-        return acc;
-    }, []) || [];
-
-    const chartConfig = {
-        income: {
-            label: "Income",
-            color: "#16a34a", // green-600
-        },
-        expense: {
-            label: "Expense",
-            color: "#dc2626", // red-600
-        },
-    } satisfies ChartConfig;
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -353,112 +324,84 @@ export default function FinancesPage() {
                 </div>
 
                 <main className="space-y-8">
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total Income</CardTitle>
-                                <TrendingUp className="h-4 w-4 text-green-600" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold text-green-600">
-                                    +AED {stats?.summary?.totalIncome?.toLocaleString() || '0'}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-                                <TrendingDown className="h-4 w-4 text-red-600" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold text-red-600">
-                                    -AED {stats?.summary?.totalExpense?.toLocaleString() || '0'}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
-                                <Wallet className="h-4 w-4 text-blue-600" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className={`text-2xl font-bold ${stats?.summary?.netProfit && stats.summary.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                                    AED {stats?.summary?.netProfit?.toLocaleString() || '0'}
-                                </div>
-                            </CardContent>
-                        </Card>
+                    {/* Stats Cards with Month Selector */}
+                    <div className="space-y-4">
+                        {/* Month Selector */}
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg font-semibold text-slate-900">{chartMonthName}</h2>
+                                <p className="text-sm text-muted-foreground">Financial summary for the selected month</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={goToPreviousMonth}
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={goToCurrentMonth}
+                                    disabled={isCurrentMonth}
+                                    className="text-xs"
+                                >
+                                    Today
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={goToNextMonth}
+                                    disabled={isCurrentMonth}
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <Card>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium">Total Income</CardTitle>
+                                    <TrendingUp className="h-4 w-4 text-green-600" />
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold text-green-600">
+                                        +AED {stats?.summary?.totalIncome?.toLocaleString() || '0'}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+                                    <TrendingDown className="h-4 w-4 text-red-600" />
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold text-red-600">
+                                        -AED {stats?.summary?.totalExpense?.toLocaleString() || '0'}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
+                                    <Wallet className="h-4 w-4 text-blue-600" />
+                                </CardHeader>
+                                <CardContent>
+                                    <div className={`text-2xl font-bold ${stats?.summary?.netProfit && stats.summary.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                                        AED {stats?.summary?.netProfit?.toLocaleString() || '0'}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
 
-                    {/* Charts Section */}
+                    {/* Add Transaction Form */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Monthly Overview Chart */}
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <div>
-                                    <CardTitle>Monthly Overview</CardTitle>
-                                    <p className="text-sm text-muted-foreground mt-1">{chartMonthName}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-8 w-8"
-                                        onClick={goToPreviousMonth}
-                                    >
-                                        <ChevronLeft className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={goToCurrentMonth}
-                                        disabled={isCurrentMonth}
-                                        className="text-xs"
-                                    >
-                                        Today
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-8 w-8"
-                                        onClick={goToNextMonth}
-                                        disabled={isCurrentMonth}
-                                    >
-                                        <ChevronRight className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                {monthlyData && monthlyData.length > 0 ? (
-                                    <div className="h-[300px] w-full">
-                                        <ChartContainer config={chartConfig}>
-                                            <BarChart accessibilityLayer data={monthlyData}>
-                                                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                                <XAxis
-                                                    dataKey="month"
-                                                    tickLine={false}
-                                                    tickMargin={10}
-                                                    axisLine={false}
-                                                    tickFormatter={(value) => value.slice(0, 3)}
-                                                />
-                                                <ChartTooltip content={<ChartTooltipContent />} />
-                                                <Bar dataKey="income" fill="var(--color-income)" radius={[4, 4, 0, 0]} />
-                                                <Bar dataKey="expense" fill="var(--color-expense)" radius={[4, 4, 0, 0]} />
-                                            </BarChart>
-                                        </ChartContainer>
-                                    </div>
-                                ) : (
-                                    <div className="h-[300px] w-full flex items-center justify-center">
-                                        <div className="text-center text-muted-foreground">
-                                            <Wallet className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                                            <p>No transactions for {chartMonthName}</p>
-                                            <p className="text-sm">Add a transaction to see the chart</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-
                         {/* Add Transaction Form */}
                         <Card>
                             <CardHeader>
