@@ -176,12 +176,6 @@ export default function FinancesPage() {
         }
     };
 
-    const goToCurrentMonth = () => {
-        const now = new Date();
-        setChartMonth(now.getMonth());
-        setChartYear(now.getFullYear());
-    };
-
     const isCurrentMonth = chartMonth === new Date().getMonth() && chartYear === new Date().getFullYear();
     const chartMonthName = new Date(chartYear, chartMonth).toLocaleDateString('en', { month: 'long', year: 'numeric' });
 
@@ -341,15 +335,31 @@ export default function FinancesPage() {
                                 >
                                     <ChevronLeft className="h-4 w-4" />
                                 </Button>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={goToCurrentMonth}
-                                    disabled={isCurrentMonth}
-                                    className="text-xs"
+                                <Select
+                                    value={`${chartYear}-${chartMonth}`}
+                                    onValueChange={(value) => {
+                                        const [year, month] = value.split('-').map(Number);
+                                        setChartYear(year);
+                                        setChartMonth(month);
+                                    }}
                                 >
-                                    Today
-                                </Button>
+                                    <SelectTrigger className="w-[160px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {Array.from({ length: 12 }, (_, i) => {
+                                            const date = new Date();
+                                            date.setMonth(date.getMonth() - i);
+                                            const monthValue = `${date.getFullYear()}-${date.getMonth()}`;
+                                            const monthLabel = date.toLocaleDateString('en', { month: 'long', year: 'numeric' });
+                                            return (
+                                                <SelectItem key={monthValue} value={monthValue}>
+                                                    {monthLabel}
+                                                </SelectItem>
+                                            );
+                                        })}
+                                    </SelectContent>
+                                </Select>
                                 <Button
                                     variant="outline"
                                     size="icon"
