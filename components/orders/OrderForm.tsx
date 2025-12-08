@@ -140,11 +140,10 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                             WhatsApp Number *
                         </label>
                         <input
-                            type="tel"
+                            type="text"
                             value={formData.whatsappNumber}
                             onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
                             placeholder="+971 50 123 4567"
-                            required
                             className="w-full"
                         />
                     </div>
@@ -155,10 +154,10 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                             Direct Phone
                         </label>
                         <input
-                            type="tel"
+                            type="text"
                             value={formData.directPhone}
                             onChange={(e) => setFormData({ ...formData, directPhone: e.target.value })}
-                            placeholder="+971 50 123 4567"
+                            placeholder="Any format"
                             className="w-full"
                         />
                     </div>
@@ -198,7 +197,6 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                             value={formData.perfumeChoice}
                             onChange={(e) => setFormData({ ...formData, perfumeChoice: e.target.value })}
                             placeholder=" "
-                            required
                             className="w-full"
                         />
                     </div>
@@ -210,11 +208,10 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                                 Quantity *
                             </label>
                             <input
-                                type="number"
-                                min="1"
+                                type="text"
                                 value={formData.amount}
-                                onChange={(e) => setFormData({ ...formData, amount: parseInt(e.target.value) })}
-                                required
+                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                placeholder="1"
                                 className="w-full"
                             />
                         </div>
@@ -225,11 +222,9 @@ export default function OrderForm({ initialData, orderId }: OrderFormProps) {
                                 Price (AED)
                             </label>
                             <input
-                                type="number"
-                                min="0"
-                                step="0.01"
+                                type="text"
                                 value={formData.price}
-                                onChange={(e) => setFormData({ ...formData, price: e.target.value ? parseFloat(e.target.value) : '' })}
+                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                                 placeholder="0.00"
                                 className="w-full"
                             />

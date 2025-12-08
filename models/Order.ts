@@ -2,26 +2,26 @@ import mongoose, { Schema, Model, models } from 'mongoose';
 
 export interface IOrder {
     orderNumber: number;
-    date: Date;
-    whatsappNumber: string;
-    hasCustomText: boolean;
-    hasCustomImage: boolean;
+    date?: Date;
+    whatsappNumber?: string;
+    hasCustomText?: boolean;
+    hasCustomImage?: boolean;
     customTextContent?: string;
-    amount: number;
-    price?: number;
-    perfumeChoice: string;
+    amount?: string | number;
+    price?: string | number;
+    perfumeChoice?: string;
     emirate?: string;
     area?: string;
     otherLocation?: string;
     directPhone?: string;
-    orderTaker: string;
+    orderTaker?: string;
     createdBy?: string; // User ID who created the order
     receiptNumber?: string;
     couponNumber?: string;
-    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+    status?: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     notes?: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const OrderSchema = new Schema<IOrder>(
@@ -33,12 +33,10 @@ const OrderSchema = new Schema<IOrder>(
         },
         date: {
             type: Date,
-            required: true,
             default: Date.now,
         },
         whatsappNumber: {
             type: String,
-            required: true,
         },
         hasCustomText: {
             type: Boolean,
@@ -52,17 +50,13 @@ const OrderSchema = new Schema<IOrder>(
             type: String,
         },
         amount: {
-            type: Number,
-            required: true,
-            min: 1,
+            type: Schema.Types.Mixed, // Accept any format (string or number)
         },
         price: {
-            type: Number,
-            min: 0,
+            type: Schema.Types.Mixed, // Accept any format (string or number)
         },
         perfumeChoice: {
             type: String,
-            required: true,
         },
         emirate: {
             type: String,
@@ -78,7 +72,6 @@ const OrderSchema = new Schema<IOrder>(
         },
         orderTaker: {
             type: String,
-            required: true,
         },
         receiptNumber: {
             type: String,
