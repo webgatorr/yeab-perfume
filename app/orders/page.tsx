@@ -187,14 +187,21 @@ function OrdersContent() {
 
             const columns = [
                 { header: 'Order #', key: 'orderNumber' },
+                { header: 'Receipt #', key: 'receiptNumber' },
                 { header: 'Date', key: 'date', formatter: (item: any) => new Date(item.date).toLocaleDateString() },
-                { header: 'Customer', key: 'whatsappNumber' },
+                { header: 'Status', key: 'status' },
                 { header: 'Perfume', key: 'perfumeChoice' },
                 { header: 'Amount', key: 'amount' },
                 { header: 'Price', key: 'price' },
-                { header: 'Status', key: 'status' },
+                { header: 'Whatsapp', key: 'whatsappNumber' },
+                { header: 'Direct Phone', key: 'directPhone' },
                 { header: 'Emirate', key: 'emirate' },
+                { header: 'Area', key: 'area' },
+                { header: 'Other Loc', key: 'otherLocation' },
                 { header: 'Order Taker', key: 'orderTaker' },
+                { header: 'Coupon', key: 'couponNumber' },
+                { header: 'Notes', key: 'notes' },
+                { header: 'Custom Text', key: 'customTextContent' },
             ];
 
             if (format === 'csv') {

@@ -36,7 +36,8 @@ export const downloadCSV = (data: any[], columns: ExportColumn[], filename: stri
 };
 
 export const downloadPDF = (data: any[], columns: ExportColumn[], title: string, filename: string) => {
-    const doc = new jsPDF();
+    const orientation = columns.length > 8 ? 'landscape' : 'portrait';
+    const doc = new jsPDF({ orientation });
 
     // Title
     doc.setFontSize(18);
