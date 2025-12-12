@@ -6,6 +6,8 @@ import { useEffect, useState, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
 import { toast } from 'sonner';
 import { TransactionDetailModal } from '@/components/finances/TransactionDetailModal';
+import { ExportDialog } from '@/components/shared/ExportDialog';
+import { downloadCSV, downloadPDF } from '@/lib/exportUtils';
 import FinanceAuthGate from '@/components/finances/FinanceAuthGate';
 import {
     TrendingUp,
@@ -211,6 +213,51 @@ export default function FinancesPage() {
         setCurrentPage(1);
     };
 
+    const handleExport = async (format: 'csv' | 'pdf', exportStartDate: string, exportEndDate: string) => {
+        try {
+            const params = new URLSearchParams();
+            if (debouncedSearch) params.set('search', debouncedSearch);
+            if (typeFilter) params.set('type', typeFilter);
+
+            // Use range from dialog
+            params.set('startDate', new Date(exportStartDate).toISOString());
+            const end = new Date(exportEndDate);
+            end.setHours(23, 59, 59, 999);
+            params.set('endDate', end.toISOString());
+
+            params.set('limit', '10000');
+
+            const res = await fetch(`/api/transactions?${params.toString()}`);
+            const data = await res.json();
+
+            if (!data.transactions || data.transactions.length === 0) {
+                toast.error('No transactions found to export');
+                return;
+            }
+
+            const exportData = data.transactions;
+            const filename = `finances_${exportStartDate}_${exportEndDate}`;
+
+            const columns = [
+                { header: 'Date', key: 'date', formatter: (item: any) => new Date(item.date).toLocaleDateString() },
+                { header: 'Type', key: 'type' },
+                { header: 'Category', key: 'category' },
+                { header: 'Description', key: 'description' },
+                { header: 'Amount (AED)', key: 'amount' },
+            ];
+
+            if (format === 'csv') {
+                downloadCSV(exportData, columns, filename);
+            } else {
+                downloadPDF(exportData, columns, 'Financial Report', filename);
+            }
+
+        } catch (error) {
+            console.error('Export error:', error);
+            toast.error('Failed to export transactions');
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -312,9 +359,16 @@ export default function FinancesPage() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Finances</h1>
-                    <p className="text-slate-500">Track your income and expenses</p>
+                <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Finances</h1>
+                        <p className="text-slate-500">Track your income and expenses</p>
+                    </div>
+                    <ExportDialog
+                        title="Export Finances"
+                        description="Download financial data. The export will include transactions matching your current filters within the selected date range."
+                        onExport={handleExport}
+                    />
                 </div>
 
                 <main className="space-y-8">

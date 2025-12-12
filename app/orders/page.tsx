@@ -17,7 +17,10 @@ import {
     Trash2,
     Loader2,
     Eye,
+    Download,
 } from 'lucide-react';
+import { ExportDialog } from '@/components/shared/ExportDialog';
+import { downloadCSV, downloadPDF } from '@/lib/exportUtils';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -153,6 +156,59 @@ function OrdersContent() {
         }
     };
 
+    const handleExport = async (format: 'csv' | 'pdf', startDate: string, endDate: string) => {
+        try {
+            // Build params based on current filters AND the date range from dialog
+            const params = new URLSearchParams();
+            if (filters.search) params.append('search', filters.search);
+            if (filters.status) params.append('status', filters.status);
+            if (filters.emirate) params.append('emirate', filters.emirate);
+            if (filters.orderTaker) params.append('orderTaker', filters.orderTaker);
+
+            // Add date range for export
+            params.append('startDate', new Date(startDate).toISOString());
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            params.append('endDate', end.toISOString());
+
+            // Get ALL matching records
+            params.append('limit', '10000');
+
+            const res = await fetch(`/api/orders?${params.toString()}`);
+            const data = await res.json();
+
+            if (!data.orders || data.orders.length === 0) {
+                toast.error('No orders found to export');
+                return;
+            }
+
+            const exportData = data.orders;
+            const filename = `orders_${startDate}_${endDate}`;
+
+            const columns = [
+                { header: 'Order #', key: 'orderNumber' },
+                { header: 'Date', key: 'date', formatter: (item: any) => new Date(item.date).toLocaleDateString() },
+                { header: 'Customer', key: 'whatsappNumber' },
+                { header: 'Perfume', key: 'perfumeChoice' },
+                { header: 'Amount', key: 'amount' },
+                { header: 'Price', key: 'price' },
+                { header: 'Status', key: 'status' },
+                { header: 'Emirate', key: 'emirate' },
+                { header: 'Order Taker', key: 'orderTaker' },
+            ];
+
+            if (format === 'csv') {
+                downloadCSV(exportData, columns, filename);
+            } else {
+                downloadPDF(exportData, columns, 'Orders Report', filename);
+            }
+
+        } catch (error) {
+            console.error('Export error:', error);
+            toast.error('Failed to export orders');
+        }
+    };
+
     const handleDelete = async () => {
         if (!deleteDialog.orderId) return;
 
@@ -208,12 +264,19 @@ function OrdersContent() {
                         <h1 className="text-3xl font-bold tracking-tight text-slate-900">Orders</h1>
                         <p className="text-slate-500">Manage and track all perfume orders</p>
                     </div>
-                    <Link href="/orders/new">
-                        <Button>
-                            <Plus className="w-4 h-4 mr-2" />
-                            New Order
-                        </Button>
-                    </Link>
+                    <div className="flex gap-2">
+                        <ExportDialog
+                            title="Export Orders"
+                            description="Download order data. The export will include orders matching your current filters within the selected date range."
+                            onExport={handleExport}
+                        />
+                        <Link href="/orders/new">
+                            <Button>
+                                <Plus className="w-4 h-4 mr-2" />
+                                New Order
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="space-y-4">
