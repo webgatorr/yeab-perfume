@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Yeab Perfume - Order & Expense Management",
   description: "Digital order tracking and financial management system for Yeab Perfume",
-  manifest: "/manifest.webmanifest",
+
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
