@@ -124,47 +124,47 @@ export default function OrderDashboard() {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                        <Package className="h-4 w-4 text-blue-600" />
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
+                        <CardTitle className="text-base sm:text-sm font-medium truncate">Total</CardTitle>
+                        <Package className="h-5 w-5 sm:h-4 sm:w-4 text-blue-600" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-blue-600">
+                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                        <div className="text-2xl font-bold text-blue-600 truncate">
                             {data?.summary?.totalOrders?.toLocaleString() || '0'}
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Pending</CardTitle>
-                        <Clock className="h-4 w-4 text-yellow-600" />
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
+                        <CardTitle className="text-base sm:text-sm font-medium truncate">Pending</CardTitle>
+                        <Clock className="h-5 w-5 sm:h-4 sm:w-4 text-json-600 text-yellow-600" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-yellow-600">
+                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                        <div className="text-2xl font-bold text-yellow-600 truncate">
                             {data?.summary?.pendingOrders?.toLocaleString() || '0'}
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Delivered</CardTitle>
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
+                        <CardTitle className="text-base sm:text-sm font-medium truncate">Delivered</CardTitle>
+                        <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-green-600" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-green-600">
+                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                        <div className="text-2xl font-bold text-green-600 truncate">
                             {data?.summary?.deliveredOrders?.toLocaleString() || '0'}
                         </div>
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Canceled</CardTitle>
-                        <XCircle className="h-4 w-4 text-red-600" />
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
+                        <CardTitle className="text-base sm:text-sm font-medium truncate">Canceled</CardTitle>
+                        <XCircle className="h-5 w-5 sm:h-4 sm:w-4 text-red-600" />
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold text-red-600">
+                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
+                        <div className="text-2xl font-bold text-red-600 truncate">
                             {data?.summary?.canceledOrders?.toLocaleString() || '0'}
                         </div>
                     </CardContent>

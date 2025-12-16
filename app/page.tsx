@@ -66,21 +66,21 @@ export default function HomePage() {
           <h2 className="text-lg font-semibold text-slate-900 mb-4">
             Quick Actions
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Link
                   key={action.title}
                   href={action.href}
-                  className="group flex items-center space-x-4 p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
+                  className="group flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-2 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
                 >
                   <div className="p-2 bg-slate-100 rounded-md group-hover:bg-white group-hover:shadow-sm transition-all">
-                    <Icon className="w-5 h-5 text-slate-900" />
+                    <Icon className="w-6 h-6 sm:w-5 sm:h-5 text-slate-900" />
                   </div>
                   <div>
-                    <p className="font-medium text-slate-900">{action.title}</p>
-                    <p className="text-sm text-slate-500">{action.description}</p>
+                    <p className="font-semibold text-sm sm:text-base text-slate-900">{action.title}</p>
+                    <p className="text-sm text-slate-500 hidden sm:block">{action.description}</p>
                   </div>
                 </Link>
               );

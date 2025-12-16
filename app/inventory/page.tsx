@@ -294,36 +294,36 @@ export default function InventoryPage() {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8">
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-                            <Package className="h-4 w-4 text-muted-foreground" />
+                        <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
+                            <CardTitle className="text-sm font-medium truncate">Products</CardTitle>
+                            <Package className="h-5 w-5 sm:h-4 sm:w-4 text-muted-foreground" />
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{perfumes.length}</div>
+                        <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
+                            <div className="text-lg sm:text-2xl font-bold truncate">{perfumes.length}</div>
                         </CardContent>
                     </Card>
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">Total Stock</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-green-600" />
+                        <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
+                            <CardTitle className="text-sm font-medium truncate">Stock</CardTitle>
+                            <TrendingUp className="h-5 w-5 sm:h-4 sm:w-4 text-green-600" />
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">
+                        <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
+                            <div className="text-lg sm:text-2xl font-bold truncate">
                                 {totalStock >= 1000
-                                    ? `${(totalStock / 1000).toFixed(1)} kg`
-                                    : `${totalStock} g`}
+                                    ? `${(totalStock / 1000).toFixed(1)}kg`
+                                    : `${totalStock}g`}
                             </div>
                         </CardContent>
                     </Card>
-                    <Card className={lowStockCount > 0 ? 'border-red-200 bg-red-50' : ''}>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
-                            <AlertTriangle className={`h-4 w-4 ${lowStockCount > 0 ? 'text-red-600' : 'text-muted-foreground'}`} />
+                    <Card className={`${lowStockCount > 0 ? 'border-red-200 bg-red-50' : ''}`}>
+                        <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
+                            <CardTitle className="text-sm font-medium truncate">Low Stock</CardTitle>
+                            <AlertTriangle className={`h-5 w-5 sm:h-4 sm:w-4 ${lowStockCount > 0 ? 'text-red-600' : 'text-muted-foreground'}`} />
                         </CardHeader>
-                        <CardContent>
-                            <div className={`text-2xl font-bold ${lowStockCount > 0 ? 'text-red-600' : ''}`}>
+                        <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
+                            <div className={`text-lg sm:text-2xl font-bold truncate ${lowStockCount > 0 ? 'text-red-600' : ''}`}>
                                 {lowStockCount}
                             </div>
                         </CardContent>
