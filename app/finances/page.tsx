@@ -17,8 +17,19 @@ import {
     Search,
     ChevronLeft,
     ChevronRight,
-    X
+    X,
+    Trash2,
+    AlertTriangle
 } from 'lucide-react';
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -63,6 +74,10 @@ export default function FinancesPage() {
     const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [clearing, setClearing] = useState(false);
+    const [showClearDialog, setShowClearDialog] = useState(false);
+    const [clearStep, setClearStep] = useState(1);
+    const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
     // Filter and pagination state
     const [search, setSearch] = useState('');
@@ -353,6 +368,52 @@ export default function FinancesPage() {
 
 
 
+
+
+    const handleClearClick = () => {
+        setClearStep(1);
+        setDeleteConfirmation('');
+        setShowClearDialog(true);
+    };
+
+    const handleClearSubmit = async () => {
+        if (clearStep === 1) {
+            setClearStep(2);
+            return;
+        }
+
+        if (deleteConfirmation !== 'DELETE') return;
+
+        setClearing(true);
+        const loadingToast = toast.loading('Clearing all financial data...');
+
+        try {
+            const res = await fetch('/api/transactions', {
+                method: 'DELETE',
+            });
+
+            if (res.ok) {
+                toast.success('All transactions cleared successfully', {
+                    id: loadingToast,
+                });
+                setShowClearDialog(false);
+                fetchStats();
+                fetchTransactions();
+            } else {
+                toast.error('Failed to clear transactions', {
+                    id: loadingToast,
+                }); // Properly closed here
+            }
+        } catch (error) {
+            console.error('Error clearing transactions:', error);
+            toast.error('An error occurred', {
+                id: loadingToast,
+            });
+        } finally {
+            setClearing(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50">
             <Navbar />
@@ -364,11 +425,23 @@ export default function FinancesPage() {
                         <h1 className="text-3xl font-bold tracking-tight text-slate-900">Finances</h1>
                         <p className="text-slate-500">Track your income and expenses</p>
                     </div>
-                    <ExportDialog
-                        title="Export Finances"
-                        description="Download financial data. The export will include transactions matching your current filters within the selected date range."
-                        onExport={handleExport}
-                    />
+                    <div className="flex gap-2">
+                        {session?.user?.role === 'admin' && (
+                            <Button
+                                variant="destructive"
+                                onClick={handleClearClick}
+                                disabled={clearing}
+                            >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Clear All Data
+                            </Button>
+                        )}
+                        <ExportDialog
+                            title="Export Finances"
+                            description="Download financial data. The export will include transactions matching your current filters within the selected date range."
+                            onExport={handleExport}
+                        />
+                    </div>
                 </div>
 
                 <main className="space-y-8">
@@ -427,37 +500,37 @@ export default function FinancesPage() {
                         </div>
 
                         {/* Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4">
                             <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">Total Income</CardTitle>
-                                    <TrendingUp className="h-4 w-4 text-green-600" />
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-6 pb-1 sm:pb-2">
+                                    <CardTitle className="text-sm font-medium truncate">Income</CardTitle>
+                                    <TrendingUp className="h-5 w-5 sm:h-4 sm:w-4 text-green-600" />
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold text-green-600">
-                                        +AED {stats?.summary?.totalIncome?.toLocaleString() || '0'}
+                                <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
+                                    <div className="text-lg sm:text-2xl font-bold text-green-600 truncate">
+                                        +{stats?.summary?.totalIncome?.toLocaleString() || '0'}
                                     </div>
                                 </CardContent>
                             </Card>
                             <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-                                    <TrendingDown className="h-4 w-4 text-red-600" />
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-6 pb-1 sm:pb-2">
+                                    <CardTitle className="text-sm font-medium truncate">Expense</CardTitle>
+                                    <TrendingDown className="h-5 w-5 sm:h-4 sm:w-4 text-red-600" />
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold text-red-600">
-                                        -AED {stats?.summary?.totalExpense?.toLocaleString() || '0'}
+                                <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
+                                    <div className="text-lg sm:text-2xl font-bold text-red-600 truncate">
+                                        -{stats?.summary?.totalExpense?.toLocaleString() || '0'}
                                     </div>
                                 </CardContent>
                             </Card>
                             <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
-                                    <Wallet className="h-4 w-4 text-blue-600" />
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 p-2 sm:p-6 pb-1 sm:pb-2">
+                                    <CardTitle className="text-sm font-medium truncate">Profit</CardTitle>
+                                    <Wallet className="h-5 w-5 sm:h-4 sm:w-4 text-blue-600" />
                                 </CardHeader>
-                                <CardContent>
-                                    <div className={`text-2xl font-bold ${stats?.summary?.netProfit && stats.summary.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                                        AED {stats?.summary?.netProfit?.toLocaleString() || '0'}
+                                <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
+                                    <div className={`text-lg sm:text-2xl font-bold truncate ${stats?.summary?.netProfit && stats.summary.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                                        {stats?.summary?.netProfit?.toLocaleString() || '0'}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -473,7 +546,7 @@ export default function FinancesPage() {
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleSubmit} className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="type">Type</Label>
                                             <div className="flex gap-2">
@@ -757,6 +830,63 @@ export default function FinancesPage() {
                     onDelete={handleDeleteTransaction}
                     deleting={deleting}
                 />
+
+                {/* Clear All Data Warning Dialog */}
+                <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-red-600">
+                                <AlertTriangle className="h-5 w-5" />
+                                {clearStep === 1 ? 'Clear All Financial Data?' : 'FINAL WARNING: Irreversible Action'}
+                            </DialogTitle>
+                            <DialogDescription className="pt-2">
+                                {clearStep === 1 ? (
+                                    <span className="block space-y-2">
+                                        This will permanently delete ALL financial transactions (income and expenses) from the database.
+                                        <br /><br />
+                                        Are you sure you want to proceed?
+                                    </span>
+                                ) : (
+                                    <span className="block space-y-2 text-red-600 font-medium">
+                                        This action cannot be undone. All data will be lost forever.
+                                        <br /><br />
+                                        Please type <strong>DELETE</strong> below to confirm.
+                                    </span>
+                                )}
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        {clearStep === 2 && (
+                            <div className="py-4">
+                                <Input
+                                    value={deleteConfirmation}
+                                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                    placeholder="Type DELETE to confirm"
+                                    className="border-red-300 focus-visible:ring-red-500"
+                                />
+                            </div>
+                        )}
+
+                        <DialogFooter className="flex gap-2 sm:justify-end">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setShowClearDialog(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={handleClearSubmit}
+                                disabled={clearStep === 2 && deleteConfirmation !== 'DELETE'}
+                            >
+                                {clearing && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                                {clearStep === 1 ? 'Next: I understand' : 'PERMANENTLY DELETE ALL'}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );

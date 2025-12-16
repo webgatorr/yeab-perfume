@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
 import dbConnect from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
 
 // GET - Fetch transactions with filters, search, and pagination
 export async function GET(request: NextRequest) {
     try {
-        const session = await getServerSession();
+        const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -69,7 +70,7 @@ export async function GET(request: NextRequest) {
 // POST - Create new transaction
 export async function POST(request: NextRequest) {
     try {
-        const session = await getServerSession();
+        const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -87,5 +88,27 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('Error creating transaction:', error);
         return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
+    }
+}
+
+// DELETE - Clear all transactions
+export async function DELETE(request: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+
+        // Strict admin check
+        // @ts-ignore
+        if (!session || session.user?.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
+        await dbConnect();
+
+        await Transaction.deleteMany({});
+
+        return NextResponse.json({ message: 'All transactions deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting all transactions:', error);
+        return NextResponse.json({ error: 'Failed to delete transactions' }, { status: 500 });
     }
 }
