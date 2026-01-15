@@ -32,111 +32,113 @@ export function TransactionDetailModal({
     if (!isOpen || !transaction) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200 p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
                 onClick={onClose}
             />
 
             {/* Modal */}
-            <div className="relative bg-white rounded-lg shadow-2xl max-w-lg w-full mx-4 animate-in zoom-in-95 duration-200">
+            <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-100">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <div className="flex items-center justify-between p-6 pb-2">
                     <div>
-                        <h2 className="text-xl font-semibold text-slate-900">Transaction Details</h2>
-                        <p className="text-sm text-slate-500 mt-1">
-                            {transaction.type === 'income' ? 'Income' : 'Expense'} Transaction
+                        <h2 className="text-xl font-bold text-slate-900">Transaction Details</h2>
+                        <p className="text-sm text-slate-500 font-medium">
+                            {transaction.type === 'income' ? 'Income' : 'Expense'} Record
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-slate-400 hover:text-slate-600 transition-colors"
+                        className="h-8 w-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition-colors"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="h-4 w-4" />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 space-y-4">
-                    {/* Amount */}
-                    <div className="flex items-center gap-3 p-4 rounded-lg bg-slate-50">
-                        <div className={`h-10 w-10 rounded-full flex items-center justify-center ${transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'
-                            }`}>
-                            <DollarSign className={`h-5 w-5 ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                                }`} />
+                <div className="p-6 space-y-6">
+                    {/* Amount Banner */}
+                    <div className={`flex items-center gap-4 p-5 rounded-2xl border ${transaction.type === 'income' ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
+                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${transaction.type === 'income' ? 'bg-white text-emerald-600 shadow-sm' : 'bg-white text-rose-600 shadow-sm'}`}>
+                            <DollarSign className="h-6 w-6" />
                         </div>
                         <div>
-                            <p className="text-xs text-slate-500">Amount</p>
-                            <p className={`text-2xl font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                                }`}>
+                            <p className={`text-xs font-bold uppercase tracking-wider ${transaction.type === 'income' ? 'text-emerald-700' : 'text-rose-700'}`}>Amount</p>
+                            <p className={`text-3xl font-bold ${transaction.type === 'income' ? 'text-emerald-900' : 'text-rose-900'}`}>
                                 {transaction.type === 'income' ? '+' : '-'} AED {transaction.amount.toLocaleString()}
                             </p>
                         </div>
                     </div>
 
-                    {/* Category */}
-                    <div className="flex items-start gap-3">
-                        <Tag className="h-5 w-5 text-slate-400 mt-0.5" />
-                        <div className="flex-1">
-                            <p className="text-xs text-slate-500 mb-1">Category</p>
-                            <p className="text-sm font-medium text-slate-900">{transaction.category}</p>
+                    <div className="space-y-4">
+                        {/* Category */}
+                        <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                <Tag className="h-5 w-5" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Category</p>
+                                <p className="font-semibold text-slate-900">{transaction.category}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Description */}
-                    <div className="flex items-start gap-3">
-                        <FileText className="h-5 w-5 text-slate-400 mt-0.5" />
-                        <div className="flex-1">
-                            <p className="text-xs text-slate-500 mb-1">Description</p>
-                            <p className="text-sm text-slate-700">{transaction.description}</p>
+                        {/* Date */}
+                        <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                <Calendar className="h-5 w-5" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Date</p>
+                                <p className="font-semibold text-slate-900">
+                                    {new Date(transaction.date).toLocaleDateString('en-US', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })}
+                                </p>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Date */}
-                    <div className="flex items-start gap-3">
-                        <Calendar className="h-5 w-5 text-slate-400 mt-0.5" />
-                        <div className="flex-1">
-                            <p className="text-xs text-slate-500 mb-1">Date</p>
-                            <p className="text-sm font-medium text-slate-900">
-                                {new Date(transaction.date).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                })}
-                            </p>
+                        {/* Description */}
+                        <div className="flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
+                                <FileText className="h-5 w-5" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Description</p>
+                                <p className="font-medium text-slate-900 break-words">
+                                    {transaction.description || <span className="text-slate-400 italic">No description provided</span>}
+                                </p>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Created By */}
-                    <div className="flex items-start gap-3">
-                        <User className="h-5 w-5 text-slate-400 mt-0.5" />
-                        <div className="flex-1">
-                            <p className="text-xs text-slate-500 mb-1">Created By</p>
-                            <p className="text-sm font-medium text-slate-900">{transaction.createdBy}</p>
+                        {/* Created By */}
+                        <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                            <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                                <User className="h-5 w-5" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Recorded By</p>
+                                <div className="flex items-center justify-between">
+                                    <p className="font-semibold text-slate-900">{transaction.createdBy}</p>
+                                    <p className="text-xs text-slate-400">
+                                        {new Date(transaction.createdAt).toLocaleDateString()}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    {/* Created At */}
-                    <div className="pt-2 border-t border-slate-100">
-                        <p className="text-xs text-slate-400">
-                            Created on {new Date(transaction.createdAt).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
-                        </p>
                     </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3 p-6 border-t border-slate-200 bg-slate-50">
+                <div className="flex gap-3 p-6 pt-2 bg-white">
                     <Button
                         variant="outline"
                         onClick={onClose}
-                        className="flex-1"
+                        className="flex-1 h-12 rounded-xl text-slate-600 font-semibold border-slate-200 hover:bg-slate-50"
                         disabled={deleting}
                     >
                         Close
@@ -144,10 +146,10 @@ export function TransactionDetailModal({
                     <Button
                         onClick={() => onDelete(transaction._id)}
                         disabled={deleting}
-                        className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                        className="flex-1 h-12 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 border border-red-100 shadow-sm"
                     >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        {deleting ? 'Deleting...' : 'Delete'}
+                        <Trash2 className="h-5 w-5 mr-2" />
+                        {deleting ? 'Deleting...' : 'Delete Record'}
                     </Button>
                 </div>
             </div>

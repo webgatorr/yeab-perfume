@@ -15,35 +15,8 @@ import {
     ArrowUpDown,
     Loader2,
     X,
-    ChevronLeft,
-    ChevronRight,
 } from 'lucide-react';
-
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Perfume {
@@ -86,7 +59,6 @@ export default function InventoryPage() {
     const [stockFilter, setStockFilter] = useState('all');
     const [showAddPerfume, setShowAddPerfume] = useState(false);
     const [showAddShipment, setShowAddShipment] = useState(false);
-    const [selectedPerfume, setSelectedPerfume] = useState<string>('');
 
     // Add Perfume Form
     const [perfumeForm, setPerfumeForm] = useState({
@@ -260,8 +232,8 @@ export default function InventoryPage() {
 
     if (status === 'loading' || loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <Loader2 className="w-8 h-8 animate-spin text-slate-900" />
             </div>
         );
     }
@@ -269,24 +241,30 @@ export default function InventoryPage() {
     if (!session) return null;
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-slate-50/50">
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
-                        <p className="text-muted-foreground">
+                        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Inventory</h1>
+                        <p className="text-slate-500 mt-1">
                             Manage your perfume stock levels
                         </p>
                     </div>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => setShowAddPerfume(true)}>
+                    <div className="flex gap-3">
+                        <Button
+                            className="rounded-xl shadow-sm bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900"
+                            onClick={() => setShowAddPerfume(true)}
+                        >
                             <Plus className="h-4 w-4 mr-2" />
-                            Add Perfume
+                            product
                         </Button>
-                        <Button onClick={() => setShowAddShipment(true)}>
+                        <Button
+                            className="rounded-xl shadow-lg shadow-indigo-200 bg-indigo-600 hover:bg-indigo-700 text-white"
+                            onClick={() => setShowAddShipment(true)}
+                        >
                             <ArrowUpDown className="h-4 w-4 mr-2" />
                             Record Shipment
                         </Button>
@@ -294,423 +272,525 @@ export default function InventoryPage() {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
-                            <CardTitle className="text-sm font-medium truncate">Products</CardTitle>
-                            <Package className="h-5 w-5 sm:h-4 sm:w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
-                            <div className="text-lg sm:text-2xl font-bold truncate">{perfumes.length}</div>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
-                            <CardTitle className="text-sm font-medium truncate">Stock</CardTitle>
-                            <TrendingUp className="h-5 w-5 sm:h-4 sm:w-4 text-green-600" />
-                        </CardHeader>
-                        <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
-                            <div className="text-lg sm:text-2xl font-bold truncate">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Products</p>
+                            <div className="text-3xl font-bold text-slate-900 mt-1">{perfumes.length}</div>
+                        </div>
+                        <div className="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center">
+                            <Package className="h-6 w-6 text-blue-600" />
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Stock</p>
+                            <div className="text-3xl font-bold text-slate-900 mt-1">
                                 {totalStock >= 1000
                                     ? `${(totalStock / 1000).toFixed(1)}kg`
                                     : `${totalStock}g`}
                             </div>
-                        </CardContent>
-                    </Card>
-                    <Card className={`${lowStockCount > 0 ? 'border-red-200 bg-red-50' : ''}`}>
-                        <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 p-2 sm:p-6">
-                            <CardTitle className="text-sm font-medium truncate">Low Stock</CardTitle>
-                            <AlertTriangle className={`h-5 w-5 sm:h-4 sm:w-4 ${lowStockCount > 0 ? 'text-red-600' : 'text-muted-foreground'}`} />
-                        </CardHeader>
-                        <CardContent className="p-2 sm:p-6 pt-0 sm:pt-0">
-                            <div className={`text-lg sm:text-2xl font-bold truncate ${lowStockCount > 0 ? 'text-red-600' : ''}`}>
+                        </div>
+                        <div className="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                            <TrendingUp className="h-6 w-6 text-emerald-600" />
+                        </div>
+                    </div>
+                    <div className={`p-6 rounded-3xl border shadow-sm flex items-center justify-between transition-colors
+                        ${lowStockCount > 0 ? 'bg-rose-50 border-rose-100' : 'bg-white border-slate-100'}`}>
+                        <div>
+                            <p className={`text-xs font-bold uppercase tracking-wider ${lowStockCount > 0 ? 'text-rose-600' : 'text-slate-400'}`}>Low Stock</p>
+                            <div className={`text-3xl font-bold mt-1 ${lowStockCount > 0 ? 'text-rose-700' : 'text-slate-900'}`}>
                                 {lowStockCount}
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                        <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${lowStockCount > 0 ? 'bg-white' : 'bg-rose-50'}`}>
+                            <AlertTriangle className={`h-6 w-6 ${lowStockCount > 0 ? 'text-rose-600' : 'text-rose-400'}`} />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Inventory Table */}
-                <Card className="mb-8">
-                    <CardHeader className="pb-4">
-                        <div className="flex flex-col gap-4">
+                {/* Main Content Area */}
+                <div className="space-y-8">
+                    {/* Inventory Section */}
+                    <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 flex flex-col gap-4">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <CardTitle>Stock Levels</CardTitle>
-                                <Tabs
-                                    value={stockFilter}
-                                    onValueChange={setStockFilter}
-                                >
-                                    <TabsList>
-                                        <TabsTrigger value="all">All</TabsTrigger>
-                                        <TabsTrigger value="low" className="data-[state=active]:text-red-600">
-                                            Low Stock
-                                        </TabsTrigger>
+                                <h2 className="text-lg font-bold text-slate-900">Stock Levels</h2>
+                                <Tabs value={stockFilter} onValueChange={setStockFilter} className="w-full sm:w-auto">
+                                    <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-xl">
+                                        <TabsTrigger value="all" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">All Stock</TabsTrigger>
+                                        <TabsTrigger value="low" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-rose-600">Low Stock</TabsTrigger>
                                     </TabsList>
                                 </Tabs>
                             </div>
-                            <div className="relative max-w-sm">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input
+                            <div className="relative">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                                <input
                                     placeholder="Search perfumes..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    className="pl-10"
+                                    className="w-full h-12 pl-12 pr-4 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-all outline-none"
                                 />
                             </div>
                         </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Current Stock</TableHead>
-                                    <TableHead>Min Level</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {perfumes.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                                            No perfumes found
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    perfumes.map((perfume) => (
-                                        <TableRow key={perfume._id}>
-                                            <TableCell className="font-medium">{perfume.name}</TableCell>
-                                            <TableCell className="text-muted-foreground">
-                                                {perfume.category || '-'}
-                                            </TableCell>
-                                            <TableCell className="font-mono">
-                                                {formatStock(perfume)}
-                                            </TableCell>
-                                            <TableCell className="text-muted-foreground font-mono">
-                                                {formatMinStock(perfume)}
-                                            </TableCell>
-                                            <TableCell>
-                                                {perfume.isLowStock ? (
-                                                    <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700">
-                                                        <AlertTriangle className="h-3 w-3" />
-                                                        Low Stock
-                                                    </span>
-                                                ) : (
-                                                    <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
-                                                        In Stock
-                                                    </span>
-                                                )}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        setShipmentForm(prev => ({
-                                                            ...prev,
-                                                            perfumeId: perfume._id,
-                                                            inputUnit: perfume.unit,
-                                                        }));
-                                                        setShowAddShipment(true);
-                                                    }}
-                                                >
-                                                    <Plus className="h-4 w-4 mr-1" />
-                                                    Add Stock
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
 
-                {/* Recent Shipments */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Recent Stock Movements</CardTitle>
-                        <CardDescription>Last 10 shipments and adjustments</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Perfume</TableHead>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Quantity</TableHead>
-                                    <TableHead>By</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {shipments.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                                            No shipments recorded yet
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    shipments.map((shipment) => (
-                                        <TableRow key={shipment._id}>
-                                            <TableCell className="text-muted-foreground">
-                                                {new Date(shipment.date).toLocaleDateString()}
-                                            </TableCell>
-                                            <TableCell className="font-medium">
-                                                {shipment.perfume?.name || 'Unknown'}
-                                            </TableCell>
-                                            <TableCell>
-                                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium
-                                                    ${shipment.type === 'incoming'
-                                                        ? 'bg-green-50 text-green-700'
-                                                        : shipment.type === 'outgoing'
-                                                            ? 'bg-red-50 text-red-700'
-                                                            : 'bg-blue-50 text-blue-700'
-                                                    }`}>
-                                                    {shipment.type === 'incoming' && <TrendingUp className="h-3 w-3" />}
-                                                    {shipment.type === 'outgoing' && <TrendingDown className="h-3 w-3" />}
-                                                    {shipment.type.charAt(0).toUpperCase() + shipment.type.slice(1)}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell className="font-mono">
-                                                {shipment.type === 'incoming' ? '+' : shipment.type === 'outgoing' ? '-' : ''}
-                                                {shipment.inputQuantity} {shipment.inputUnit}
-                                            </TableCell>
-                                            <TableCell className="text-muted-foreground">
-                                                {shipment.createdBy}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
+                        {/* Desktop Table */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-slate-50/50 text-slate-500 font-medium border-b border-slate-100">
+                                    <tr>
+                                        <th className="px-6 py-4">Name</th>
+                                        <th className="px-6 py-4">Category</th>
+                                        <th className="px-6 py-4">Stock</th>
+                                        <th className="px-6 py-4">Status</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {perfumes.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                                                No perfumes found matching your criteria
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        perfumes.map((perfume) => (
+                                            <tr key={perfume._id} className="hover:bg-slate-50/50 transition-colors">
+                                                <td className="px-6 py-4">
+                                                    <div className="font-semibold text-slate-900">{perfume.name}</div>
+                                                    {perfume.description && <div className="text-xs text-slate-500 truncate max-w-[150px]">{perfume.description}</div>}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="inline-flex px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">
+                                                        {perfume.category || 'Uncategorized'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 font-mono text-slate-700">
+                                                    {formatStock(perfume)}
+                                                    <div className="text-xs text-slate-400">Min: {formatMinStock(perfume)}</div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {perfume.isLowStock ? (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-semibold border border-rose-100">
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
+                                                            Low Stock
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+                                                            In Stock
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <button
+                                                        onClick={() => {
+                                                            setShipmentForm(prev => ({
+                                                                ...prev,
+                                                                perfumeId: perfume._id,
+                                                                inputUnit: perfume.unit,
+                                                            }));
+                                                            setShowAddShipment(true);
+                                                        }}
+                                                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
+                                                    >
+                                                        <Plus className="h-4 w-4" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile List Cards */}
+                        <div className="md:hidden divide-y divide-slate-100">
+                            {perfumes.length === 0 ? (
+                                <div className="p-8 text-center text-slate-500">
+                                    No perfumes found
+                                </div>
+                            ) : (
+                                perfumes.map((perfume) => (
+                                    <div key={perfume._id} className="p-5 flex items-start justify-between">
+                                        <div className="space-y-1">
+                                            <div className="font-bold text-slate-900">{perfume.name}</div>
+                                            <div className="text-xs text-slate-500">{perfume.category}</div>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <div className="font-mono bg-slate-50 px-2 py-1 rounded border border-slate-100 text-xs font-medium text-slate-700">
+                                                    {formatStock(perfume)}
+                                                </div>
+                                                {perfume.isLowStock && (
+                                                    <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded border border-rose-100">Low Stock</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setShipmentForm(prev => ({
+                                                    ...prev,
+                                                    perfumeId: perfume._id,
+                                                    inputUnit: perfume.unit,
+                                                }));
+                                                setShowAddShipment(true);
+                                            }}
+                                            className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm border border-indigo-100"
+                                        >
+                                            <Plus className="h-5 w-5" />
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Shipments Section */}
+                    <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div className="p-6 border-b border-slate-100">
+                            <h2 className="text-lg font-bold text-slate-900">Recent Movements</h2>
+                            <p className="text-xs text-slate-500 mt-1">Latest stock adjustments</p>
+                        </div>
+
+                        {/* Desktop Table */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-slate-50/50 text-slate-500 font-medium border-b border-slate-100">
+                                    <tr>
+                                        <th className="px-6 py-4">Date</th>
+                                        <th className="px-6 py-4">Perfume</th>
+                                        <th className="px-6 py-4">Type</th>
+                                        <th className="px-6 py-4">Quantity</th>
+                                        <th className="px-6 py-4">By</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {shipments.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                                                No recent activity
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        shipments.map((shipment) => (
+                                            <tr key={shipment._id} className="hover:bg-slate-50/50 transition-colors">
+                                                <td className="px-6 py-4 text-slate-500">
+                                                    {new Date(shipment.date).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-6 py-4 font-medium text-slate-900">
+                                                    {shipment.perfume?.name || 'Unknown'}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border 
+                                                        ${shipment.type === 'incoming'
+                                                            ? 'bg-green-50 text-green-700 border-green-100'
+                                                            : shipment.type === 'outgoing'
+                                                                ? 'bg-rose-50 text-rose-700 border-rose-100'
+                                                                : 'bg-blue-50 text-blue-700 border-blue-100'
+                                                        }`}>
+                                                        {shipment.type === 'incoming' && <TrendingUp className="h-3 w-3" />}
+                                                        {shipment.type === 'outgoing' && <TrendingDown className="h-3 w-3" />}
+                                                        {shipment.type === 'adjustment' && <ArrowUpDown className="h-3 w-3" />}
+                                                        <span className="capitalize">{shipment.type}</span>
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 font-mono font-medium text-slate-700">
+                                                    {shipment.type === 'incoming' ? '+' : shipment.type === 'outgoing' ? '-' : ''}
+                                                    {shipment.inputQuantity} {shipment.inputUnit}
+                                                </td>
+                                                <td className="px-6 py-4 text-xs text-slate-500">
+                                                    {shipment.createdBy}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Activity List */}
+                        <div className="md:hidden">
+                            {shipments.length === 0 ? (
+                                <div className="p-8 text-center text-slate-500">
+                                    No recent activity
+                                </div>
+                            ) : (
+                                <div className="relative pl-6 pb-6 pt-6 space-y-8">
+                                    {/* Timeline Line */}
+                                    <div className="absolute left-[27px] top-6 bottom-6 w-[2px] bg-slate-100"></div>
+
+                                    {shipments.map((shipment) => (
+                                        <div key={shipment._id} className="relative flex items-start gap-4 pr-6">
+                                            {/* Node */}
+                                            <div className={`z-10 h-3 w-3 rounded-full border-2 border-white ring-2 ring-offset-2 mt-1.5 flex-shrink-0
+                                                ${shipment.type === 'incoming'
+                                                    ? 'bg-emerald-500 ring-emerald-100'
+                                                    : shipment.type === 'outgoing'
+                                                        ? 'bg-rose-500 ring-rose-100'
+                                                        : 'bg-blue-500 ring-blue-100'
+                                                }`}></div>
+
+                                            <div className="flex-1 space-y-1">
+                                                <div className="flex justify-between items-start">
+                                                    <span className="text-sm font-bold text-slate-900">{shipment.perfume?.name}</span>
+                                                    <span className="text-xs text-slate-400">{new Date(shipment.date).toLocaleDateString()}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-500">
+                                                    <span className={`font-semibold capitalize ${shipment.type === 'incoming' ? 'text-emerald-600' :
+                                                            shipment.type === 'outgoing' ? 'text-rose-600' : 'text-blue-600'
+                                                        }`}>{shipment.type}</span>
+                                                    <span className="mx-1">•</span>
+                                                    <span className="font-mono text-slate-700">
+                                                        {shipment.type === 'incoming' ? '+' : shipment.type === 'outgoing' ? '-' : ''}
+                                                        {shipment.inputQuantity}{shipment.inputUnit}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </main>
 
             {/* Add Perfume Modal */}
             {showAddPerfume && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <Card className="w-full max-w-md">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle>Add New Perfume</CardTitle>
-                                <Button variant="ghost" size="icon" onClick={() => setShowAddPerfume(false)}>
-                                    <X className="h-4 w-4" />
-                                </Button>
+                <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900">Add New Perfume</h3>
+                                <p className="text-xs text-slate-500">Enter product details below</p>
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleAddPerfume} className="space-y-4">
-                                <div>
-                                    <Label htmlFor="name">Name *</Label>
-                                    <Input
-                                        id="name"
+                            <button
+                                onClick={() => setShowAddPerfume(false)}
+                                className="h-8 w-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center hover:bg-slate-300 transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleAddPerfume} className="space-y-5">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Product Name *</label>
+                                    <input
                                         value={perfumeForm.name}
                                         onChange={(e) => setPerfumeForm(prev => ({ ...prev, name: e.target.value }))}
                                         required
+                                        className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-all font-medium"
+                                        placeholder="e.g. Royal Oud"
                                     />
                                 </div>
-                                <div>
-                                    <Label htmlFor="description">Description</Label>
-                                    <Input
-                                        id="description"
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Description</label>
+                                    <textarea
                                         value={perfumeForm.description}
                                         onChange={(e) => setPerfumeForm(prev => ({ ...prev, description: e.target.value }))}
+                                        className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-all resize-none"
+                                        rows={2}
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <Label htmlFor="unit">Display Unit</Label>
-                                        <Select
-                                            value={perfumeForm.unit}
-                                            onValueChange={(value) => setPerfumeForm(prev => ({ ...prev, unit: value }))}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="g">Grams (g)</SelectItem>
-                                                <SelectItem value="kg">Kilograms (kg)</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Unit</label>
+                                        <div className="relative">
+                                            <select
+                                                value={perfumeForm.unit}
+                                                onChange={(e) => setPerfumeForm(prev => ({ ...prev, unit: e.target.value as 'g' | 'kg' }))}
+                                                className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all appearance-none"
+                                            >
+                                                <option value="g">Grams (g)</option>
+                                                <option value="kg">Kilograms (kg)</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <Label htmlFor="minStock">Min Stock Level</Label>
-                                        <Input
-                                            id="minStock"
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Min Stock</label>
+                                        <input
                                             type="number"
-                                            min="0"
                                             value={perfumeForm.minStockLevel}
                                             onChange={(e) => setPerfumeForm(prev => ({ ...prev, minStockLevel: parseFloat(e.target.value) || 0 }))}
+                                            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all font-mono"
                                         />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <Label htmlFor="category">Category</Label>
-                                        <Input
-                                            id="category"
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Category</label>
+                                        <input
                                             value={perfumeForm.category}
                                             onChange={(e) => setPerfumeForm(prev => ({ ...prev, category: e.target.value }))}
-                                            placeholder="e.g., Oud, Floral"
+                                            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all"
+                                            placeholder="e.g. Floral"
                                         />
                                     </div>
-                                    <div>
-                                        <Label htmlFor="supplier">Supplier</Label>
-                                        <Input
-                                            id="supplier"
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Supplier</label>
+                                        <input
                                             value={perfumeForm.supplier}
                                             onChange={(e) => setPerfumeForm(prev => ({ ...prev, supplier: e.target.value }))}
+                                            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all"
                                         />
                                     </div>
                                 </div>
-                                <div className="flex gap-2 pt-4">
-                                    <Button type="button" variant="outline" className="flex-1" onClick={() => setShowAddPerfume(false)}>
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowAddPerfume(false)}
+                                        className="h-11 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-50"
+                                    >
                                         Cancel
-                                    </Button>
-                                    <Button type="submit" className="flex-1" disabled={submitting}>
-                                        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Add Perfume'}
-                                    </Button>
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting}
+                                        className="h-11 rounded-xl bg-slate-900 font-semibold text-white hover:bg-slate-800 shadow-md flex items-center justify-center gap-2"
+                                    >
+                                        {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                                        Create Product
+                                    </button>
                                 </div>
                             </form>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             )}
 
             {/* Add Shipment Modal */}
             {showAddShipment && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <Card className="w-full max-w-md">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle>Record Stock Movement</CardTitle>
-                                <Button variant="ghost" size="icon" onClick={() => setShowAddShipment(false)}>
-                                    <X className="h-4 w-4" />
-                                </Button>
+                <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900">Record Shipment</h3>
+                                <p className="text-xs text-slate-500">Track incoming or outgoing stock</p>
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleAddShipment} className="space-y-4">
-                                <div>
-                                    <Label>Perfume *</Label>
-                                    <Select
-                                        value={shipmentForm.perfumeId}
-                                        onValueChange={(value) => setShipmentForm(prev => ({ ...prev, perfumeId: value }))}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select perfume" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {perfumes.map(p => (
-                                                <SelectItem key={p._id} value={p._id}>{p.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Label>Type *</Label>
-                                    <Select
-                                        value={shipmentForm.type}
-                                        onValueChange={(value: 'incoming' | 'outgoing' | 'adjustment') => setShipmentForm(prev => ({ ...prev, type: value }))}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="incoming">
-                                                <span className="flex items-center gap-2">
-                                                    <TrendingUp className="h-4 w-4 text-green-600" />
-                                                    Incoming (Add Stock)
-                                                </span>
-                                            </SelectItem>
-                                            <SelectItem value="outgoing">
-                                                <span className="flex items-center gap-2">
-                                                    <TrendingDown className="h-4 w-4 text-red-600" />
-                                                    Outgoing (Remove Stock)
-                                                </span>
-                                            </SelectItem>
-                                            <SelectItem value="adjustment">
-                                                <span className="flex items-center gap-2">
-                                                    <ArrowUpDown className="h-4 w-4 text-blue-600" />
-                                                    Adjustment (Set Stock)
-                                                </span>
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                            <button
+                                onClick={() => setShowAddShipment(false)}
+                                className="h-8 w-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center hover:bg-slate-300 transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleAddShipment} className="space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <Label>Quantity *</Label>
-                                        <Input
+                                    <div className="space-y-2 col-span-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Movement Type</label>
+                                        <div className="grid grid-cols-3 gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200">
+                                            {[
+                                                { id: 'incoming', label: 'In', icon: TrendingUp },
+                                                { id: 'outgoing', label: 'Out', icon: TrendingDown },
+                                                { id: 'adjustment', label: 'Set', icon: ArrowUpDown }
+                                            ].map((type) => {
+                                                const Icon = type.icon;
+                                                const isSelected = shipmentForm.type === type.id;
+                                                return (
+                                                    <button
+                                                        key={type.id}
+                                                        type="button"
+                                                        onClick={() => setShipmentForm(prev => ({ ...prev, type: type.id as any }))}
+                                                        className={`flex flex-col items-center justify-center py-2 rounded-lg transition-all ${isSelected ? 'bg-white shadow-sm text-slate-900 font-semibold' : 'text-slate-500 hover:text-slate-700'
+                                                            }`}
+                                                    >
+                                                        <Icon className={`h-4 w-4 mb-1 ${isSelected ? (type.id === 'incoming' ? 'text-green-600' : type.id === 'outgoing' ? 'text-rose-600' : 'text-blue-600') : ''
+                                                            }`} />
+                                                        <span className="text-xs">{type.label}</span>
+                                                    </button>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2 col-span-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Perfume</label>
+                                        <select
+                                            value={shipmentForm.perfumeId}
+                                            onChange={(e) => setShipmentForm(prev => ({ ...prev, perfumeId: e.target.value }))}
+                                            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all font-medium"
+                                        >
+                                            <option value="">Select a perfume...</option>
+                                            {perfumes.map(p => (
+                                                <option key={p._id} value={p._id}>{p.name} ({formatStock(p)})</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Quantity</label>
+                                        <input
                                             type="number"
-                                            min="0"
-                                            step="0.01"
                                             value={shipmentForm.inputQuantity}
                                             onChange={(e) => setShipmentForm(prev => ({ ...prev, inputQuantity: e.target.value }))}
                                             required
+                                            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all font-mono"
                                         />
                                     </div>
-                                    <div>
-                                        <Label>Unit</Label>
-                                        <Select
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Unit</label>
+                                        <select
                                             value={shipmentForm.inputUnit}
-                                            onValueChange={(value) => setShipmentForm(prev => ({ ...prev, inputUnit: value }))}
+                                            onChange={(e) => setShipmentForm(prev => ({ ...prev, inputUnit: e.target.value }))}
+                                            className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all"
                                         >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="g">Grams (g)</SelectItem>
-                                                <SelectItem value="kg">Kilograms (kg)</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                            <option value="g">Grams (g)</option>
+                                            <option value="kg">Kilograms (kg)</option>
+                                        </select>
                                     </div>
                                 </div>
+
                                 {shipmentForm.type === 'incoming' && (
-                                    <>
-                                        <div>
-                                            <Label>Cost per {shipmentForm.inputUnit === 'kg' ? 'kg' : 'gram'}</Label>
-                                            <Input
+                                    <div className="grid grid-cols-2 gap-4 animate-in fade-in">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cost/{shipmentForm.inputUnit}</label>
+                                            <input
                                                 type="number"
-                                                min="0"
-                                                step="0.01"
                                                 value={shipmentForm.costPerUnit}
                                                 onChange={(e) => setShipmentForm(prev => ({ ...prev, costPerUnit: e.target.value }))}
-                                                placeholder="Optional"
+                                                className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all"
+                                                placeholder="0.00"
                                             />
                                         </div>
-                                        <div>
-                                            <Label>Supplier</Label>
-                                            <Input
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Supplier</label>
+                                            <input
                                                 value={shipmentForm.supplier}
                                                 onChange={(e) => setShipmentForm(prev => ({ ...prev, supplier: e.target.value }))}
+                                                className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all"
                                             />
                                         </div>
-                                    </>
+                                    </div>
                                 )}
-                                <div>
-                                    <Label>Notes</Label>
-                                    <Input
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Notes</label>
+                                    <input
                                         value={shipmentForm.notes}
                                         onChange={(e) => setShipmentForm(prev => ({ ...prev, notes: e.target.value }))}
-                                        placeholder="Optional notes"
+                                        className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 transition-all"
+                                        placeholder="Optional..."
                                     />
                                 </div>
-                                <div className="flex gap-2 pt-4">
-                                    <Button type="button" variant="outline" className="flex-1" onClick={() => setShowAddShipment(false)}>
+
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowAddShipment(false)}
+                                        className="h-11 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-50"
+                                    >
                                         Cancel
-                                    </Button>
-                                    <Button type="submit" className="flex-1" disabled={submitting || !shipmentForm.perfumeId}>
-                                        {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Record'}
-                                    </Button>
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={submitting || !shipmentForm.perfumeId}
+                                        className="h-11 rounded-xl bg-slate-900 font-semibold text-white hover:bg-slate-800 shadow-md flex items-center justify-center gap-2"
+                                    >
+                                        {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                                        Save Record
+                                    </button>
                                 </div>
                             </form>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

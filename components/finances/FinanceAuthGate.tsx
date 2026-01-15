@@ -3,9 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 interface FinanceAuthGateProps {
     children: React.ReactNode;
@@ -82,48 +79,48 @@ export default function FinanceAuthGate({ children }: FinanceAuthGateProps) {
 
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-                <Card className="w-full max-w-md">
-                    <CardHeader className="text-center">
-                        <div className="mx-auto mb-4 p-3 bg-slate-100 rounded-full w-fit">
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+                <div className="w-full max-w-md bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+                    <div className="p-8 text-center border-b border-slate-100 bg-slate-50/50">
+                        <div className="mx-auto mb-4 h-16 w-16 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center justify-center">
                             <Lock className="w-8 h-8 text-slate-700" />
                         </div>
-                        <CardTitle className="text-2xl">Finance Access</CardTitle>
-                        <CardDescription>
+                        <h2 className="text-2xl font-bold text-slate-900">Finance Access</h2>
+                        <p className="text-slate-500 mt-2 text-sm">
                             Enter your finance credentials to access this section
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        </p>
+                    </div>
+                    <div className="p-8">
+                        <form onSubmit={handleSubmit} className="space-y-5">
                             <div className="space-y-2">
-                                <Label htmlFor="finance-username">Username</Label>
-                                <Input
-                                    id="finance-username"
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Username</label>
+                                <input
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     placeholder="Enter finance username"
                                     required
                                     autoComplete="off"
+                                    className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-all font-medium"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="finance-password">Password</Label>
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Password</label>
                                 <div className="relative">
-                                    <Input
-                                        id="finance-password"
+                                    <input
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         placeholder="Enter finance password"
                                         required
                                         autoComplete="off"
+                                        className="w-full h-11 px-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-indigo-500 transition-all font-medium"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
                                     >
                                         {showPassword ? (
                                             <EyeOff className="h-4 w-4" />
@@ -135,17 +132,21 @@ export default function FinanceAuthGate({ children }: FinanceAuthGateProps) {
                             </div>
 
                             {error && (
-                                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
+                                <div className="text-sm font-medium text-red-600 bg-red-50 p-4 rounded-xl border border-red-100 flex items-center justify-center">
                                     {error}
                                 </div>
                             )}
 
-                            <Button type="submit" className="w-full" disabled={authenticating}>
+                            <Button
+                                type="submit"
+                                className="w-full h-12 rounded-xl text-base font-bold bg-slate-900 hover:bg-slate-800 shadow-lg active:scale-95 transition-all"
+                                disabled={authenticating}
+                            >
                                 {authenticating ? 'Authenticating...' : 'Access Finances'}
                             </Button>
                         </form>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         );
     }
