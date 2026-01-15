@@ -27,7 +27,7 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-50 supports-[backdrop-filter]:bg-white/60">
+        <nav className="bg-white border-b border-slate-100 sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
@@ -92,7 +92,7 @@ export default function Navbar() {
 
             {/* Mobile menu */}
             {mobileMenuOpen && (
-                <div className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-xl animate-in slide-in-from-top-2 duration-300 ease-out shadow-xl absolute w-full z-40 rounded-b-3xl transform origin-top">
+                <div className="md:hidden border-t border-slate-100 bg-white animate-in slide-in-from-top-2 duration-300 ease-out shadow-xl absolute w-full z-40 rounded-b-3xl transform origin-top">
                     <div className="px-4 pt-3 pb-6 space-y-2">
                         {navigation.map((item) => {
                             const Icon = item.icon;

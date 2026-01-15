@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
-import { Plus, Search, Bell, Sparkles } from 'lucide-react';
+import { Plus, Search, Sparkles } from 'lucide-react';
 import FinancialDashboard from '@/components/dashboard/FinancialDashboard';
 import OrderDashboard from '@/components/dashboard/OrderDashboard';
 import { format } from 'date-fns';
@@ -76,9 +76,6 @@ export default function HomePage() {
               {greeting}, {session.user.name?.split(' ')[0]}
             </h1>
           </div>
-          <button className="p-2 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-100 transition-all shadow-sm active:scale-95">
-            <Bell className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Quick Actions Grid */}
@@ -118,15 +115,15 @@ export default function HomePage() {
 
         {/* Dashboards Wrapper */}
         <div className="space-y-10">
+          <section>
+            <OrderDashboard />
+          </section>
+
           {session.user.role === 'admin' && (
             <section>
               <FinancialDashboard />
             </section>
           )}
-
-          <section>
-            <OrderDashboard />
-          </section>
         </div>
       </main>
     </div>
