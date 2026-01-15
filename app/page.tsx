@@ -2,28 +2,37 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Bell, Sparkles } from 'lucide-react';
 import FinancialDashboard from '@/components/dashboard/FinancialDashboard';
 import OrderDashboard from '@/components/dashboard/OrderDashboard';
+import { format } from 'date-fns';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
     }
+
+    // Set greeting based on time of day
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good Morning');
+    else if (hour < 18) setGreeting('Good Afternoon');
+    else setGreeting('Good Evening');
   }, [status, router]);
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mx-auto"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="text-slate-500 text-sm animate-pulse">Loading experience...</p>
         </div>
       </div>
     );
@@ -34,70 +43,90 @@ export default function HomePage() {
   const quickActions = [
     {
       title: 'New Order',
-      description: 'Create a new order',
+      description: 'Create order',
       icon: Plus,
       href: '/orders/new',
+      color: 'bg-indigo-600',
+      textColor: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
     },
     {
-      title: 'Search Orders',
-      description: 'Find and manage orders',
+      title: 'Search',
+      description: 'Find orders',
       icon: Search,
       href: '/orders',
+      color: 'bg-violet-600',
+      textColor: 'text-violet-600',
+      bgColor: 'bg-violet-50',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50/50">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-1">
-            Dashboard
-          </h1>
-          <p className="text-slate-500">
-            Overview of your business performance.
-          </p>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+        {/* Welcome Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-slate-500 mb-0.5">
+              {format(new Date(), 'EEEE, d MMMM')}
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              {greeting}, {session.user.name?.split(' ')[0]}
+            </h1>
+          </div>
+          <button className="p-2 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-100 transition-all shadow-sm active:scale-95">
+            <Bell className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        {/* Quick Actions Grid */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-500 fill-current" />
+              Quick Actions
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Link
                   key={action.title}
                   href={action.href}
-                  className="group flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-2 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
+                  className="group relative overflow-hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 active:scale-[0.98]"
                 >
-                  <div className="p-2 bg-slate-100 rounded-md group-hover:bg-white group-hover:shadow-sm transition-all">
-                    <Icon className="w-6 h-6 sm:w-5 sm:h-5 text-slate-900" />
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Icon className={`w-24 h-24 ${action.textColor}`} />
                   </div>
+
+                  <div className={`w-12 h-12 ${action.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className={`w-6 h-6 ${action.textColor}`} />
+                  </div>
+
                   <div>
-                    <p className="font-semibold text-sm sm:text-base text-slate-900">{action.title}</p>
-                    <p className="text-sm text-slate-500 hidden sm:block">{action.description}</p>
+                    <h3 className="font-bold text-slate-900 text-lg mb-1">{action.title}</h3>
+                    <p className="text-sm text-slate-500 font-medium">{action.description}</p>
                   </div>
                 </Link>
               );
             })}
           </div>
-        </div>
+        </section>
 
-        {/* Financial Overview (Admin Only) */}
-        {session.user.role === 'admin' && (
-          <div className="mb-8">
-            <FinancialDashboard />
-          </div>
-        )}
+        {/* Dashboards Wrapper */}
+        <div className="space-y-10">
+          {session.user.role === 'admin' && (
+            <section>
+              <FinancialDashboard />
+            </section>
+          )}
 
-        {/* Order Statistics (Visible to everyone) */}
-        <div className="mb-8">
-          <OrderDashboard />
+          <section>
+            <OrderDashboard />
+          </section>
         </div>
       </main>
     </div>

@@ -110,157 +110,196 @@ export default function OrderDashboard() {
     ].filter(item => item.value > 0);
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="text-lg font-semibold text-slate-900">Order Statistics</h2>
-                <Tabs value={period} onValueChange={setPeriod} className="w-full sm:w-auto">
-                    <TabsList className="grid w-full grid-cols-4 sm:w-[400px]">
-                        <TabsTrigger value="today">Today</TabsTrigger>
-                        <TabsTrigger value="week">Week</TabsTrigger>
-                        <TabsTrigger value="month">Month</TabsTrigger>
-                        <TabsTrigger value="year">Year</TabsTrigger>
+        <div className="space-y-8">
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-slate-900 tracking-tight">Order Statistics</h2>
+                </div>
+                <Tabs value={period} onValueChange={setPeriod} className="w-full">
+                    <TabsList className="w-full grid grid-cols-4 bg-slate-100 p-1 rounded-xl h-12">
+                        <TabsTrigger value="today" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Today</TabsTrigger>
+                        <TabsTrigger value="week" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Week</TabsTrigger>
+                        <TabsTrigger value="month" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Month</TabsTrigger>
+                        <TabsTrigger value="year" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Year</TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
-                        <CardTitle className="text-base sm:text-sm font-medium truncate">Total</CardTitle>
-                        <Package className="h-5 w-5 sm:h-4 sm:w-4 text-blue-600" />
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
-                        <div className="text-2xl font-bold text-blue-600 truncate">
-                            {data?.summary?.totalOrders?.toLocaleString() || '0'}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="bg-blue-50/50 p-5 rounded-3xl border border-blue-100/50 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-blue-100/80 rounded-full">
+                            <Package className="h-4 w-4 text-blue-700" />
                         </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
-                        <CardTitle className="text-base sm:text-sm font-medium truncate">Pending</CardTitle>
-                        <Clock className="h-5 w-5 sm:h-4 sm:w-4 text-json-600 text-yellow-600" />
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
-                        <div className="text-2xl font-bold text-yellow-600 truncate">
-                            {data?.summary?.pendingOrders?.toLocaleString() || '0'}
+                        <span className="text-sm font-semibold text-blue-900/70">Total</span>
+                    </div>
+                    <div className="text-2xl font-bold text-blue-900 tracking-tight">
+                        {data?.summary?.totalOrders?.toLocaleString() || '0'}
+                    </div>
+                </div>
+
+                <div className="bg-amber-50/50 p-5 rounded-3xl border border-amber-100/50 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-amber-100/80 rounded-full">
+                            <Clock className="h-4 w-4 text-amber-700" />
                         </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
-                        <CardTitle className="text-base sm:text-sm font-medium truncate">Delivered</CardTitle>
-                        <CheckCircle className="h-5 w-5 sm:h-4 sm:w-4 text-green-600" />
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
-                        <div className="text-2xl font-bold text-green-600 truncate">
-                            {data?.summary?.deliveredOrders?.toLocaleString() || '0'}
+                        <span className="text-sm font-semibold text-amber-900/70">Pending</span>
+                    </div>
+                    <div className="text-2xl font-bold text-amber-900 tracking-tight">
+                        {data?.summary?.pendingOrders?.toLocaleString() || '0'}
+                    </div>
+                </div>
+
+                <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/50 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-emerald-100/80 rounded-full">
+                            <CheckCircle className="h-4 w-4 text-emerald-700" />
                         </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-6 pb-1 sm:pb-2">
-                        <CardTitle className="text-base sm:text-sm font-medium truncate">Canceled</CardTitle>
-                        <XCircle className="h-5 w-5 sm:h-4 sm:w-4 text-red-600" />
-                    </CardHeader>
-                    <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0">
-                        <div className="text-2xl font-bold text-red-600 truncate">
-                            {data?.summary?.canceledOrders?.toLocaleString() || '0'}
+                        <span className="text-sm font-semibold text-emerald-900/70">Delivered</span>
+                    </div>
+                    <div className="text-2xl font-bold text-emerald-900 tracking-tight">
+                        {data?.summary?.deliveredOrders?.toLocaleString() || '0'}
+                    </div>
+                </div>
+
+                <div className="bg-rose-50/50 p-5 rounded-3xl border border-rose-100/50 space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-rose-100/80 rounded-full">
+                            <XCircle className="h-4 w-4 text-rose-700" />
                         </div>
-                    </CardContent>
-                </Card>
+                        <span className="text-sm font-semibold text-rose-900/70">Canceled</span>
+                    </div>
+                    <div className="text-2xl font-bold text-rose-900 tracking-tight">
+                        {data?.summary?.canceledOrders?.toLocaleString() || '0'}
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main Trend Chart */}
-                <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <BarChart3 className="h-4 w-4" />
-                            Order Volume
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={data?.processedTrends || []}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                    <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                                    <YAxis fontSize={12} tickLine={false} axisLine={false} />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    />
-                                    <Bar dataKey="orders" name="Orders" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
+                <div className="lg:col-span-2 bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-2">
+                            <div className="p-2 bg-slate-50 rounded-lg">
+                                <BarChart3 className="h-4 w-4 text-slate-500" />
+                            </div>
+                            <h3 className="font-semibold text-slate-900">Order Volume</h3>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="h-[250px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data?.processedTrends || []} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="ordersGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.2} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                <XAxis
+                                    dataKey="name"
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tick={{ fill: '#64748b' }}
+                                    dy={10}
+                                />
+                                <YAxis
+                                    fontSize={11}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tick={{ fill: '#64748b' }}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: '#f8fafc' }}
+                                    content={({ active, payload, label }) => {
+                                        if (active && payload && payload.length) {
+                                            return (
+                                                <div className="bg-slate-900 text-white text-xs rounded-lg py-2 px-3 shadow-xl border border-slate-800">
+                                                    <p className="font-semibold mb-1 border-b border-slate-700 pb-1">{label}</p>
+                                                    <p className="flex justify-between gap-4">
+                                                        <span className="text-blue-400">Orders:</span>
+                                                        <span className="font-mono">{payload[0].value?.toLocaleString()}</span>
+                                                    </p>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
+                                />
+                                <Bar dataKey="orders" name="Orders" fill="url(#ordersGradient)" radius={[6, 6, 0, 0]} maxBarSize={50} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
 
                 {/* Status Distribution */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <PieChart className="h-4 w-4" />
-                            Status Distribution
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={statusData}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        {statusData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend verticalAlign="bottom" height={36} />
-                                </PieChart>
-                            </ResponsiveContainer>
+                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <div className="p-2 bg-slate-50 rounded-lg">
+                                <PieChart className="h-4 w-4 text-slate-500" />
+                            </div>
+                            <h3 className="font-semibold text-slate-900">Status Distribution</h3>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="h-[250px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={statusData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {statusData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                />
+                                <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 gap-6">
                 {/* Locations */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-red-500" />
-                            Orders by Location
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={data?.locationStats?.slice(0, 7) || []} layout="vertical" margin={{ left: 20 }}>
-                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                                    <XAxis type="number" fontSize={12} tickLine={false} axisLine={false} />
-                                    <YAxis dataKey="_id" type="category" width={80} fontSize={12} tickLine={false} axisLine={false} />
-                                    <Tooltip
-                                        cursor={{ fill: 'transparent' }}
-                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                    />
-                                    <Bar dataKey="count" name="Orders" fill="#8884d8" radius={[0, 4, 4, 0]} barSize={20}>
-                                        {data?.locationStats?.map((entry: any, index: number) => (
-                                            <Cell key={`cell-${index}`} fill={LOCATION_COLORS[index % LOCATION_COLORS.length]} />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
+                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-2">
+                            <div className="p-2 bg-slate-50 rounded-lg">
+                                <MapPin className="h-4 w-4 text-slate-500" />
+                            </div>
+                            <h3 className="font-semibold text-slate-900">Orders by Location</h3>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={data?.locationStats?.slice(0, 7) || []} layout="vertical" margin={{ left: 0, right: 30 }}>
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                                <XAxis type="number" fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
+                                <YAxis dataKey="_id" type="category" width={100} fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#0f172a', fontWeight: 500 }} />
+                                <Tooltip
+                                    cursor={{ fill: '#f8fafc' }}
+                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                />
+                                <Bar dataKey="count" name="Orders" fill="#8884d8" radius={[0, 4, 4, 0]} barSize={24}>
+                                    {data?.locationStats?.map((entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={LOCATION_COLORS[index % LOCATION_COLORS.length]} />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
         </div>
     );
