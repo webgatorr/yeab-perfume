@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
+
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
@@ -226,7 +226,7 @@ export default function SettingsPage() {
 
     return (
         <div className="min-h-screen bg-slate-50/50">
-            <Navbar />
+
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
@@ -448,8 +448,8 @@ export default function SettingsPage() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, role: 'staff' })}
                                         className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${formData.role === 'staff'
-                                                ? 'bg-blue-50 border-blue-200 text-blue-700'
-                                                : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                                            ? 'bg-blue-50 border-blue-200 text-blue-700'
+                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                                             }`}
                                     >
                                         <Shield className={`h-5 w-5 ${formData.role === 'staff' ? 'fill-blue-200' : ''}`} />
@@ -459,8 +459,8 @@ export default function SettingsPage() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, role: 'admin' })}
                                         className={`p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${formData.role === 'admin'
-                                                ? 'bg-amber-50 border-amber-200 text-amber-700'
-                                                : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                                            ? 'bg-amber-50 border-amber-200 text-amber-700'
+                                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                                             }`}
                                     >
                                         <ShieldCheck className={`h-5 w-5 ${formData.role === 'admin' ? 'fill-amber-200' : ''}`} />

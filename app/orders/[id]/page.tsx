@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
-import Navbar from '@/components/Navbar';
+
 import {
     Loader2,
     ArrowLeft,
@@ -98,7 +98,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
 
     return (
         <div className="min-h-screen bg-slate-50/50">
-            <Navbar />
+
 
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}

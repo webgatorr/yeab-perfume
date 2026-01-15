@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, use } from 'react';
-import Navbar from '@/components/Navbar';
+
 import OrderForm from '@/components/orders/OrderForm';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -51,7 +51,7 @@ export default function EditOrderPage({ params }: { params: Promise<{ id: string
 
     return (
         <div className="min-h-screen bg-slate-50/50">
-            <Navbar />
+
 
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8 space-y-4">

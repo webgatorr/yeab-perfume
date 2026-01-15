@@ -1,63 +1,57 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useMemo } from 'react';
+import useSWR from 'swr';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Clock, CheckCircle, XCircle, Loader2, BarChart3, MapPin } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from "recharts";
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function OrderDashboard() {
     const [period, setPeriod] = useState('month'); // 'today', 'week', 'month', 'year'
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
 
-    useEffect(() => {
-        fetchData();
+    // Calculate dates based on period
+    const { startDate, endDate, grouping } = useMemo(() => {
+        const now = new Date();
+        let startDate = new Date();
+        let endDate = new Date();
+        let grouping = 'day';
+
+        if (period === 'today') {
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+            grouping = 'day';
+        } else if (period === 'week') {
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            startDate = new Date(now.setDate(diff));
+            startDate.setHours(0, 0, 0, 0);
+            endDate = new Date();
+            endDate.setHours(23, 59, 59, 999);
+            grouping = 'day';
+        } else if (period === 'month') {
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            grouping = 'day';
+        } else if (period === 'year') {
+            startDate = new Date(now.getFullYear(), 0, 1);
+            endDate = new Date(now.getFullYear(), 11, 31);
+            grouping = 'month';
+        }
+
+        return { startDate, endDate, grouping };
     }, [period]);
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const now = new Date();
-            let startDate = new Date();
-            let endDate = new Date();
-            let grouping = 'day';
-
-            if (period === 'today') {
-                startDate.setHours(0, 0, 0, 0);
-                endDate.setHours(23, 59, 59, 999);
-                grouping = 'day';
-            } else if (period === 'week') {
-                const day = now.getDay();
-                const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-                startDate = new Date(now.setDate(diff));
-                startDate.setHours(0, 0, 0, 0);
-                endDate = new Date();
-                endDate.setHours(23, 59, 59, 999);
-                grouping = 'day';
-            } else if (period === 'month') {
-                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                grouping = 'day';
-            } else if (period === 'year') {
-                startDate = new Date(now.getFullYear(), 0, 1);
-                endDate = new Date(now.getFullYear(), 11, 31);
-                grouping = 'month';
-            }
-
-            const res = await fetch(`/api/orders/stats?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&grouping=${grouping}`);
-            const result = await res.json();
-
-            // Process trends for chart
-            const processedTrends = processTrends(result.trends, grouping);
-
-            setData({ ...result, processedTrends });
-        } catch (error) {
-            console.error('Error fetching order data:', error);
-        } finally {
-            setLoading(false);
+    // Use SWR for fetching
+    const { data: rawData, isLoading } = useSWR(
+        `/api/orders/stats?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&grouping=${grouping}`,
+        fetcher,
+        {
+            keepPreviousData: true,
+            revalidateOnFocus: false,
         }
-    };
+    );
 
     const processTrends = (trends: any[], grouping: string) => {
         if (!trends) return [];
@@ -86,6 +80,14 @@ export default function OrderDashboard() {
         return Array.from(map.values());
     };
 
+    const data = useMemo(() => {
+        if (!rawData) return null;
+        return {
+            ...rawData,
+            processedTrends: processTrends(rawData.trends, grouping)
+        };
+    }, [rawData, grouping]);
+
     const STATUS_COLORS = {
         pending: '#EAB308',   // Yellow
         delivered: '#16A34A', // Green
@@ -94,10 +96,13 @@ export default function OrderDashboard() {
 
     const LOCATION_COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
-    if (loading && !data) {
+    if (isLoading && !data) {
         return (
-            <div className="flex justify-center p-8">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="flex justify-center p-8 bg-white rounded-3xl border border-slate-100 shadow-sm min-h-[400px] items-center">
+                <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <p className="text-sm text-slate-500 font-medium">Loading statistics...</p>
+                </div>
             </div>
         );
     }
@@ -110,7 +115,7 @@ export default function OrderDashboard() {
     ].filter(item => item.value > 0);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-slate-900 tracking-tight">Order Statistics</h2>
@@ -127,7 +132,7 @@ export default function OrderDashboard() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="bg-blue-50/50 p-5 rounded-3xl border border-blue-100/50 space-y-3">
+                <div className="bg-blue-50/50 p-5 rounded-3xl border border-blue-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-blue-100/80 rounded-full">
                             <Package className="h-4 w-4 text-blue-700" />
@@ -139,7 +144,7 @@ export default function OrderDashboard() {
                     </div>
                 </div>
 
-                <div className="bg-amber-50/50 p-5 rounded-3xl border border-amber-100/50 space-y-3">
+                <div className="bg-amber-50/50 p-5 rounded-3xl border border-amber-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-amber-100/80 rounded-full">
                             <Clock className="h-4 w-4 text-amber-700" />
@@ -151,7 +156,7 @@ export default function OrderDashboard() {
                     </div>
                 </div>
 
-                <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/50 space-y-3">
+                <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-emerald-100/80 rounded-full">
                             <CheckCircle className="h-4 w-4 text-emerald-700" />
@@ -163,7 +168,7 @@ export default function OrderDashboard() {
                     </div>
                 </div>
 
-                <div className="bg-rose-50/50 p-5 rounded-3xl border border-rose-100/50 space-y-3">
+                <div className="bg-rose-50/50 p-5 rounded-3xl border border-rose-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-rose-100/80 rounded-full">
                             <XCircle className="h-4 w-4 text-rose-700" />
@@ -210,6 +215,7 @@ export default function OrderDashboard() {
                                     tickLine={false}
                                     axisLine={false}
                                     tick={{ fill: '#64748b' }}
+                                    allowDecimals={false}
                                 />
                                 <Tooltip
                                     cursor={{ fill: '#f8fafc' }}

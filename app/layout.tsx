@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Providers from "@/components/Providers";
 import { Toaster } from 'sonner';
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen bg-slate-50`}>
         <Providers>
+          <Navbar />
           {children}
           <Toaster position="top-center" richColors />
         </Providers>

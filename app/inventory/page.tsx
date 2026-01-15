@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
+
 import { toast } from 'sonner';
 import {
     Package,
@@ -242,7 +242,7 @@ export default function InventoryPage() {
 
     return (
         <div className="min-h-screen bg-slate-50/50">
-            <Navbar />
+
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Header */}
@@ -536,7 +536,7 @@ export default function InventoryPage() {
                                                 </div>
                                                 <p className="text-xs text-slate-500">
                                                     <span className={`font-semibold capitalize ${shipment.type === 'incoming' ? 'text-emerald-600' :
-                                                            shipment.type === 'outgoing' ? 'text-rose-600' : 'text-blue-600'
+                                                        shipment.type === 'outgoing' ? 'text-rose-600' : 'text-blue-600'
                                                         }`}>{shipment.type}</span>
                                                     <span className="mx-1">•</span>
                                                     <span className="font-mono text-slate-700">

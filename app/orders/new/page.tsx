@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import Navbar from '@/components/Navbar';
+
 import OrderForm from '@/components/orders/OrderForm';
 import { Loader2 } from 'lucide-react';
 
@@ -29,7 +29,7 @@ export default function NewOrderPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-            <Navbar />
+
 
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">

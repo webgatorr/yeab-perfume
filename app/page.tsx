@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
+
 import Link from 'next/link';
 import { Plus, Search, Sparkles } from 'lucide-react';
 import FinancialDashboard from '@/components/dashboard/FinancialDashboard';
@@ -63,7 +63,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50">
-      <Navbar />
+
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Welcome Header */}

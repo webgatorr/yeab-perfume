@@ -1,63 +1,55 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useMemo } from 'react';
+import useSWR from 'swr';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrendingUp, TrendingDown, Wallet, Loader2, PieChart as PieChartIcon, BarChart3 } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from "recharts";
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function FinancialDashboard() {
     const [period, setPeriod] = useState('month'); // 'today', 'week', 'month', 'year'
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>(null);
 
-    useEffect(() => {
-        fetchData();
+    const { startDate, endDate, grouping } = useMemo(() => {
+        const now = new Date();
+        let startDate = new Date();
+        let endDate = new Date();
+        let grouping = 'day';
+
+        if (period === 'today') {
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+            grouping = 'day';
+        } else if (period === 'week') {
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+            startDate = new Date(now.setDate(diff));
+            startDate.setHours(0, 0, 0, 0);
+            endDate = new Date();
+            endDate.setHours(23, 59, 59, 999);
+            grouping = 'day';
+        } else if (period === 'month') {
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            grouping = 'day';
+        } else if (period === 'year') {
+            startDate = new Date(now.getFullYear(), 0, 1);
+            endDate = new Date(now.getFullYear(), 11, 31);
+            grouping = 'month';
+        }
+
+        return { startDate, endDate, grouping };
     }, [period]);
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const now = new Date();
-            let startDate = new Date();
-            let endDate = new Date();
-            let grouping = 'day';
-
-            if (period === 'today') {
-                startDate.setHours(0, 0, 0, 0);
-                endDate.setHours(23, 59, 59, 999);
-                grouping = 'day';
-            } else if (period === 'week') {
-                const day = now.getDay();
-                const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-                startDate = new Date(now.setDate(diff));
-                startDate.setHours(0, 0, 0, 0);
-                endDate = new Date();
-                endDate.setHours(23, 59, 59, 999);
-                grouping = 'day';
-            } else if (period === 'month') {
-                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-                endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                grouping = 'day';
-            } else if (period === 'year') {
-                startDate = new Date(now.getFullYear(), 0, 1);
-                endDate = new Date(now.getFullYear(), 11, 31);
-                grouping = 'month';
-            }
-
-            const res = await fetch(`/api/transactions/stats?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&grouping=${grouping}`);
-            const result = await res.json();
-
-            // Process trends for chart
-            const processedTrends = processTrends(result.trends, grouping);
-
-            setData({ ...result, processedTrends });
-        } catch (error) {
-            console.error('Error fetching finance data:', error);
-        } finally {
-            setLoading(false);
+    const { data: rawData, isLoading } = useSWR(
+        `/api/transactions/stats?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&grouping=${grouping}`,
+        fetcher,
+        {
+            keepPreviousData: true,
+            revalidateOnFocus: false,
         }
-    };
+    );
 
     const processTrends = (trends: any[], grouping: string) => {
         if (!trends) return [];
@@ -90,18 +82,29 @@ export default function FinancialDashboard() {
         return Array.from(map.values());
     };
 
+    const data = useMemo(() => {
+        if (!rawData) return null;
+        return {
+            ...rawData,
+            processedTrends: processTrends(rawData.trends, grouping)
+        };
+    }, [rawData, grouping]);
+
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
-    if (loading && !data) {
+    if (isLoading && !data) {
         return (
-            <div className="flex justify-center p-8">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="flex justify-center p-8 bg-white rounded-3xl border border-slate-100 shadow-sm min-h-[400px] items-center">
+                <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <p className="text-sm text-slate-500 font-medium">Loading finances...</p>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-slate-900 tracking-tight">Financial Overview</h2>
@@ -118,7 +121,7 @@ export default function FinancialDashboard() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/50 space-y-3">
+                <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-emerald-100/80 rounded-full">
                             <TrendingUp className="h-4 w-4 text-emerald-700" />
@@ -130,7 +133,7 @@ export default function FinancialDashboard() {
                     </div>
                 </div>
 
-                <div className="bg-rose-50/50 p-5 rounded-3xl border border-rose-100/50 space-y-3">
+                <div className="bg-rose-50/50 p-5 rounded-3xl border border-rose-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-rose-100/80 rounded-full">
                             <TrendingDown className="h-4 w-4 text-rose-700" />
@@ -142,7 +145,7 @@ export default function FinancialDashboard() {
                     </div>
                 </div>
 
-                <div className="col-span-2 sm:col-span-1 bg-indigo-50/50 p-5 rounded-3xl border border-indigo-100/50 space-y-3">
+                <div className="col-span-2 sm:col-span-1 bg-indigo-50/50 p-5 rounded-3xl border border-indigo-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-indigo-100/80 rounded-full">
                             <Wallet className="h-4 w-4 text-indigo-700" />
