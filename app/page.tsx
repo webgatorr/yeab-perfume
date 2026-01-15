@@ -65,47 +65,41 @@ export default function HomePage() {
     <div className="min-h-screen bg-slate-50/50">
 
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-        {/* Welcome Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-500 mb-0.5">
-              {format(new Date(), 'EEEE, d MMMM')}
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              {greeting}, {session.user.name?.split(' ')[0]}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
+        {/* Brand Header */}
+        <div className="flex flex-col items-center text-center space-y-6">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-[2rem] shadow-xl shadow-indigo-100 overflow-hidden bg-white ring-1 ring-slate-100">
+            <img src="/logo.png" alt="Yeab Perfume" className="w-full h-full object-cover" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl sm:text-4xl font-serif font-medium text-slate-900 tracking-tight">
+              Yeab Perfume
             </h1>
+            <p className="text-sm font-medium text-slate-500">
+              {greeting}, {session.user.name?.split(' ')[0]}
+            </p>
           </div>
         </div>
 
         {/* Quick Actions Grid */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500 fill-current" />
-              Quick Actions
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Link
                   key={action.title}
                   href={action.href}
-                  className="group relative overflow-hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 active:scale-[0.98]"
+                  className="group relative overflow-hidden bg-white p-6 rounded-3xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] border border-slate-100 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 active:scale-[0.98]"
                 >
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Icon className={`w-24 h-24 ${action.textColor}`} />
-                  </div>
-
-                  <div className={`w-12 h-12 ${action.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-6 h-6 ${action.textColor}`} />
-                  </div>
-
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-lg mb-1">{action.title}</h3>
-                    <p className="text-sm text-slate-500 font-medium">{action.description}</p>
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <div className={`w-14 h-14 ${action.bgColor} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
+                      <Icon className={`w-7 h-7 ${action.textColor}`} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-lg">{action.title}</h3>
+                      <p className="text-xs text-slate-400 font-medium mt-1 uppercase tracking-wide">{action.description}</p>
+                    </div>
                   </div>
                 </Link>
               );
