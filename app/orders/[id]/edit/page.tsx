@@ -50,17 +50,19 @@ export default function EditOrderPage({ params }: { params: Promise<{ id: string
     if (!session) return null;
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-slate-50/50">
             <Navbar />
 
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="mb-8">
-                    <Link href={`/orders/${id}`} className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-4">
+                <div className="mb-8 space-y-4">
+                    <Link href={`/orders/${id}`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
                         <ArrowLeft className="h-4 w-4" />
                         Back to Order Details
                     </Link>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Edit Order</h1>
-                    <p className="text-slate-500 mt-1">Update order details and information</p>
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Edit Order</h1>
+                        <p className="text-slate-500 mt-1">Update order details and information</p>
+                    </div>
                 </div>
 
                 <OrderForm initialData={order} orderId={id} />
