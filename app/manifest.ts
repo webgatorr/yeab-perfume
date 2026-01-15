@@ -2,13 +2,15 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Yeab Perfume - Order & Expense Management',
+        name: 'Yeab Perfume',
         short_name: 'Yeab Perfume',
-        description: 'Digital order tracking and financial management system for Yeab Perfume',
+        description: 'Premium order tracking and financial management system',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
-        theme_color: '#000000',
+        theme_color: '#ffffff',
+        orientation: 'portrait',
+        categories: ['business', 'finance', 'productivity'],
         icons: [
             {
                 src: '/icon-192.png',
