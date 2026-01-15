@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Yeab Perfume',
-        short_name: 'Yeab Perfume',
+        name: 'Yeab',
+        short_name: 'Yeab',
         description: 'Premium order tracking and financial management system',
         start_url: '/',
         display: 'standalone',
