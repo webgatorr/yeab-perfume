@@ -5,11 +5,17 @@ import useSWR from 'swr';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Clock, CheckCircle, XCircle, Loader2, BarChart3, MapPin } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from "recharts";
+import { DateRangePicker } from "@/components/ui/DateRangePicker";
+import { subDays } from 'date-fns';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function OrderDashboard() {
-    const [period, setPeriod] = useState('month'); // 'today', 'week', 'month', 'year'
+    const [period, setPeriod] = useState('month'); // 'today', 'week', 'month', 'year', 'custom'
+    const [customDateRange, setCustomDateRange] = useState({
+        from: subDays(new Date(), 29),
+        to: new Date(),
+    });
 
     // Calculate dates based on period
     const { startDate, endDate, grouping } = useMemo(() => {
@@ -38,13 +44,21 @@ export default function OrderDashboard() {
             startDate = new Date(now.getFullYear(), 0, 1);
             endDate = new Date(now.getFullYear(), 11, 31);
             grouping = 'month';
+        } else if (period === 'custom') {
+            startDate = new Date(customDateRange.from);
+            startDate.setHours(0, 0, 0, 0);
+            endDate = new Date(customDateRange.to);
+            endDate.setHours(23, 59, 59, 999);
+            // Determine grouping based on date range span
+            const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+            grouping = daysDiff > 60 ? 'month' : 'day';
         }
 
         return { startDate, endDate, grouping };
-    }, [period]);
+    }, [period, customDateRange]);
 
     // Use SWR for fetching
-    const { data: rawData, isLoading } = useSWR(
+    const { data: rawData, isLoading, isValidating } = useSWR(
         `/api/orders/stats?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&grouping=${grouping}`,
         fetcher,
         {
@@ -119,19 +133,32 @@ export default function OrderDashboard() {
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-slate-900 tracking-tight">Order Statistics</h2>
+                    {isValidating && (
+                        <div className="flex items-center gap-2 text-sm text-indigo-600">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span className="font-medium">Updating...</span>
+                        </div>
+                    )}
                 </div>
                 <Tabs value={period} onValueChange={setPeriod} className="w-full">
-                    <TabsList className="w-full grid grid-cols-4 bg-slate-100 p-1 rounded-xl h-12">
+                    <TabsList className="w-full grid grid-cols-5 bg-slate-100 p-1 rounded-xl h-12">
                         <TabsTrigger value="today" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Today</TabsTrigger>
                         <TabsTrigger value="week" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Week</TabsTrigger>
                         <TabsTrigger value="month" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Month</TabsTrigger>
                         <TabsTrigger value="year" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Year</TabsTrigger>
+                        <TabsTrigger value="custom" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all duration-200">Custom</TabsTrigger>
                     </TabsList>
                 </Tabs>
+                {period === 'custom' && (
+                    <DateRangePicker
+                        dateRange={customDateRange}
+                        onDateRangeChange={setCustomDateRange}
+                    />
+                )}
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className={`grid grid-cols-2 lg:grid-cols-4 gap-3 transition-opacity duration-300 ${isValidating ? 'opacity-50' : 'opacity-100'}`}>
                 <div className="bg-blue-50/50 p-5 rounded-3xl border border-blue-100/50 space-y-3 transition-transform hover:scale-[1.02] active:scale-[0.98] duration-200">
                     <div className="flex items-center gap-2">
                         <div className="p-2 bg-blue-100/80 rounded-full">
@@ -181,9 +208,14 @@ export default function OrderDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 transition-opacity duration-300 ${isValidating ? 'opacity-50' : 'opacity-100'}`}>
                 {/* Main Trend Chart */}
-                <div className="lg:col-span-2 bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                <div className="lg:col-span-2 bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative">
+                    {isValidating && (
+                        <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-3xl flex items-center justify-center z-10">
+                            <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
                             <div className="p-2 bg-slate-50 rounded-lg">
@@ -241,7 +273,12 @@ export default function OrderDashboard() {
                 </div>
 
                 {/* Status Distribution */}
-                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative">
+                    {isValidating && (
+                        <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-3xl flex items-center justify-center z-10">
+                            <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <div className="p-2 bg-slate-50 rounded-lg">
@@ -276,9 +313,14 @@ export default function OrderDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6">
+            <div className={`grid grid-cols-1 gap-6 transition-opacity duration-300 ${isValidating ? 'opacity-50' : 'opacity-100'}`}>
                 {/* Locations */}
-                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative">
+                    {isValidating && (
+                        <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] rounded-3xl flex items-center justify-center z-10">
+                            <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
+                        </div>
+                    )}
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
                             <div className="p-2 bg-slate-50 rounded-lg">
