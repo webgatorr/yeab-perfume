@@ -196,22 +196,26 @@ export default function LandingPage() {
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 {/* Image */}
-                <div className="relative h-80 bg-gradient-to-br from-slate-50 to-amber-50/30 overflow-hidden">
-                  <Image
-                    src={perfume.image}
-                    alt={perfume.name}
-                    fill
-                    className="object-contain p-12 group-hover:scale-110 transition-transform duration-700"
-                  />
+                <div className="relative h-96 bg-gradient-to-br from-slate-50 via-white to-amber-50/20 overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={perfume.image}
+                        alt={perfume.name}
+                        fill
+                        className="object-cover scale-[1.4] group-hover:scale-[1.5] transition-transform duration-700"
+                      />
+                    </div>
+                  </div>
                   {hoveredIndex === index && (
-                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-                      <div className="text-center space-y-2">
-                        <div className="text-sm text-slate-500">Notes</div>
-                        <div className="flex gap-2 justify-center flex-wrap px-4">
+                    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-10">
+                      <div className="text-center space-y-3 px-6">
+                        <div className="text-sm font-medium text-slate-700">Scent Notes</div>
+                        <div className="flex gap-2 justify-center flex-wrap">
                           {perfume.notes.map((note) => (
                             <span
                               key={note}
-                              className="px-3 py-1 bg-white rounded-full text-xs border border-slate-200"
+                              className="px-4 py-2 bg-white rounded-full text-xs font-medium border border-slate-200 shadow-sm"
                             >
                               {note}
                             </span>
