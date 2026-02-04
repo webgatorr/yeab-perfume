@@ -80,10 +80,11 @@ yeab-perfume/
 │   │   ├── auth/         # Authentication
 │   │   ├── orders/       # Order management
 │   │   └── transactions/ # Financial tracking
+│   ├── dashboard/        # Staff dashboard
 │   ├── orders/           # Order pages
 │   ├── finances/         # Financial pages
 │   ├── login/            # Login page
-│   └── page.tsx          # Dashboard
+│   └── page.tsx          # Landing page (public)
 ├── components/
 │   ├── orders/           # Order components
 │   ├── Navbar.tsx        # Navigation
@@ -94,6 +95,16 @@ yeab-perfume/
     ├── Order.ts          # Order schema
     └── Transaction.ts    # Transaction schema
 ```
+
+## Pages
+
+- `/` - Public landing page showcasing perfume collection
+- `/login` - Staff login page
+- `/dashboard` - Staff dashboard (protected)
+- `/orders` - Order management (protected)
+- `/finances` - Financial tracking (protected, admin only)
+- `/inventory` - Inventory management (protected, admin only)
+- `/settings` - System settings (protected, admin only)
 
 ## Deployment
 

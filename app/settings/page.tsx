@@ -69,7 +69,7 @@ export default function SettingsPage() {
             router.push('/login');
         } else if (status === 'authenticated') {
             if (session.user.role !== 'admin') {
-                router.push('/');
+                router.push('/dashboard');
                 toast.error('Access denied', {
                     description: 'Only administrators can access settings.',
                 });

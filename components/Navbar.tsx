@@ -14,7 +14,7 @@ export default function Navbar() {
     if (!session) return null;
 
     const navigation = [
-        { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Orders', href: '/orders', icon: Package },
     ];
 
@@ -31,7 +31,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
-                        <Link href="/" className="flex items-center space-x-3 group active:scale-95 transition-transform duration-200" onClick={() => setMobileMenuOpen(false)}>
+                        <Link href="/dashboard" className="flex items-center space-x-3 group active:scale-95 transition-transform duration-200" onClick={() => setMobileMenuOpen(false)}>
                             <div className="w-10 h-10 bg-slate-900 rounded-xl shadow-lg shadow-slate-200 flex items-center justify-center group-hover:bg-indigo-600 transition-colors duration-300">
                                 <Package className="w-5 h-5 text-white" />
                             </div>

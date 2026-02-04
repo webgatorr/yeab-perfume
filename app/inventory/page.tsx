@@ -88,7 +88,7 @@ export default function InventoryPage() {
             router.push('/login');
         } else if (status === 'authenticated') {
             if (session?.user?.role !== 'admin') {
-                router.push('/');
+                router.push('/dashboard');
                 toast.error('Unauthorized access');
                 return;
             }
