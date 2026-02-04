@@ -104,20 +104,20 @@ export default function LandingPage() {
         />
 
         <div className="max-w-7xl mx-auto w-full">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left Content */}
             <motion.div
               initial="initial"
               animate="animate"
               variants={staggerContainer}
-              className="space-y-10"
+              className="space-y-8 lg:space-y-10 w-full text-center lg:text-left"
             >
-              <div className="space-y-6">
+              <div className="space-y-4 lg:space-y-6">
                 <motion.h1
                   variants={fadeInUp}
-                  className="text-5xl md:text-6xl lg:text-8xl font-serif leading-[1.1]"
+                  className="text-4xl md:text-6xl lg:text-8xl font-serif leading-[1.1] md:leading-[1.1]"
                 >
-                  Create Your <br />
+                  Create Your <br className="hidden lg:block" />
                   <span className="italic text-amber-900/90 relative inline-block">
                     Custom Scent
                     <motion.svg
@@ -133,45 +133,45 @@ export default function LandingPage() {
                 </motion.h1>
                 <motion.p
                   variants={fadeInUp}
-                  className="text-xl text-slate-600 leading-relaxed max-w-lg font-light"
+                  className="text-lg lg:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto lg:mx-0 font-light"
                 >
                   Experience bespoke perfumery with our handcrafted, made-to-order fragrances tailored just for you.
                 </motion.p>
               </div>
 
-              <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
+              <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <a
                   href="#about"
-                  className="group inline-flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all hover:shadow-xl hover:-translate-y-1"
+                  className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all hover:shadow-xl hover:-translate-y-1"
                 >
                   <span className="tracking-wide">Order Custom Perfume</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </a>
                 <a
                   href="#about"
-                  className="inline-flex items-center gap-3 px-8 py-4 border border-slate-200 text-slate-900 rounded-full hover:bg-slate-50 transition-all hover:-translate-y-1"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-slate-200 text-slate-900 rounded-full hover:bg-slate-50 transition-all hover:-translate-y-1"
                 >
                   <span className="tracking-wide">Learn More</span>
                 </a>
               </motion.div>
 
               {/* Stats */}
-              <motion.div variants={fadeInUp} className="flex gap-12 pt-8 border-t border-slate-100">
+              <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-4 lg:flex lg:gap-12 pt-8 border-t border-slate-100">
                 {[
                   { value: '100%', label: 'Custom Made' },
                   { value: '24h', label: 'Long Lasting' },
                   { value: '100%', label: 'Natural' }
                 ].map((stat, i) => (
                   <div key={i}>
-                    <div className="text-3xl font-serif mb-1">{stat.value}</div>
-                    <div className="text-sm text-slate-500 tracking-wider uppercase">{stat.label}</div>
+                    <div className="text-2xl lg:text-3xl font-serif mb-1">{stat.value}</div>
+                    <div className="text-[10px] lg:text-sm text-slate-500 tracking-wider uppercase">{stat.label}</div>
                   </div>
                 ))}
               </motion.div>
             </motion.div>
 
             {/* Right Image */}
-            <div className="relative h-[400px] lg:h-[800px] w-full mt-10 lg:mt-0">
+            <div className="relative h-[400px] lg:h-[800px] w-full mb-8 lg:mb-0 lg:mt-0">
               <motion.div
                 style={{ y: y2 }}
                 initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
@@ -186,7 +186,7 @@ export default function LandingPage() {
                   src="/images/hero.png"
                   alt="Featured Perfume"
                   fill
-                  className="object-contain drop-shadow-2xl"
+                  className="object-contain drop-shadow-2xl scale-110 lg:scale-100"
                   priority
                 />
               </motion.div>
@@ -459,9 +459,9 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-slate-100 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div className="md:col-span-2">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10 lg:py-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
+            <div className="col-span-2">
               <Link href="/" className="flex items-center gap-3 mb-6">
                 <div className="text-xl font-serif tracking-widest">YEAB</div>
                 <div className="w-px h-5 bg-slate-200" />
@@ -481,11 +481,11 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h4 className="font-medium mb-6 text-slate-900 tracking-wide">Connect</h4>
+              <h4 className="font-medium mb-6 text-slate-900 tracking-wide">Socials</h4>
               <ul className="space-y-3">
                 <li><a href="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Instagram</a></li>
                 <li><a href="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Facebook</a></li>
-                <li><a href="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">Contact</a></li>
+                <li><a href="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">TikTok</a></li>
               </ul>
             </div>
           </div>
