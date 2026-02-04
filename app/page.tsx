@@ -44,15 +44,6 @@ export default function LandingPage() {
     },
     {
       id: 2,
-      name: 'Luxury Series',
-      subtitle: 'Oriental & Spicy',
-      image: '/images/28m2.png',
-      description: 'Rich amber notes with hints of vanilla',
-      notes: ['Amber', 'Vanilla', 'Oud'],
-      color: 'bg-amber-50'
-    },
-    {
-      id: 3,
       name: 'Premium Edition',
       subtitle: 'Fresh & Citrus',
       image: '/images/29m1.png',
@@ -60,6 +51,16 @@ export default function LandingPage() {
       notes: ['Bergamot', 'Neroli', 'Musk'],
       color: 'bg-emerald-50'
     },
+    {
+      id: 3,
+      name: 'Luxury Series',
+      subtitle: 'Oriental & Spicy',
+      image: '/images/28m2.png',
+      description: 'Rich amber notes with hints of vanilla',
+      notes: ['Amber', 'Vanilla', 'Oud'],
+      color: 'bg-amber-50'
+    },
+
   ];
 
   return (
@@ -188,32 +189,6 @@ export default function LandingPage() {
                   className="object-contain drop-shadow-2xl"
                   priority
                 />
-
-                {/* Floating Elements */}
-                <motion.div
-                  animate={{ y: [0, -20, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-20 right-10 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/50"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <Sparkles className="w-5 h-5 text-amber-500" />
-                    <span className="font-serif text-lg">Premium</span>
-                  </div>
-                  <div className="text-xs text-slate-500 uppercase tracking-widest">Quality</div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, 20, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  className="absolute bottom-40 left-0 bg-white/90 backdrop-blur p-4 rounded-2xl shadow-xl border border-white/50"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                    <span className="font-serif text-lg">5.0</span>
-                  </div>
-                  <div className="text-xs text-slate-500 uppercase tracking-widest">Rating</div>
-                </motion.div>
-
               </motion.div>
             </div>
           </div>
@@ -400,7 +375,7 @@ export default function LandingPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-amber-50/50" />
               <Image
-                src="/images/hero.png"
+                src="/images/hero2.png"
                 alt="About Yeab Perfume"
                 fill
                 className="object-contain p-12 hover:scale-105 transition-transform duration-1000"
