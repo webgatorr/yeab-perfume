@@ -41,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-white`}>
+      <body className={`${inter.className} min-h-screen bg-white`} suppressHydrationWarning>
         <Providers>
           <ConditionalNavbar />
           {children}

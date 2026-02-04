@@ -115,7 +115,7 @@ export default function LandingPage() {
               <div className="space-y-6">
                 <motion.h1
                   variants={fadeInUp}
-                  className="text-6xl lg:text-8xl font-serif leading-[1.1]"
+                  className="text-5xl md:text-6xl lg:text-8xl font-serif leading-[1.1]"
                 >
                   Create Your <br />
                   <span className="italic text-amber-900/90 relative inline-block">
@@ -171,7 +171,7 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Right Image */}
-            <div className="relative h-[800px] hidden lg:block">
+            <div className="relative h-[400px] lg:h-[800px] w-full mt-10 lg:mt-0">
               <motion.div
                 style={{ y: y2 }}
                 initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
@@ -205,7 +205,7 @@ export default function LandingPage() {
             variants={staggerContainer}
             className="text-center mb-20"
           >
-            <motion.h2 variants={fadeInUp} className="text-4xl lg:text-5xl font-serif mb-6">Why Choose Yeab</motion.h2>
+            <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6">Why Choose Yeab</motion.h2>
             <motion.p variants={fadeInUp} className="text-slate-600 max-w-2xl mx-auto font-light text-lg">
               We're committed to creating exceptional fragrances that tell your unique story
             </motion.p>
@@ -267,7 +267,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             className="text-center mb-20"
           >
-            <h2 className="text-4xl lg:text-5xl font-serif mb-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif mb-4">
               Signature Fragrances
             </h2>
             <p className="text-slate-600 max-w-2xl mx-auto font-light text-lg">
@@ -288,7 +288,7 @@ export default function LandingPage() {
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 {/* Image */}
-                <div className={`relative h-96 ${perfume.color} overflow-hidden transition-colors duration-500`}>
+                <div className={`relative h-[500px] ${perfume.color} overflow-hidden transition-colors duration-500`}>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <motion.div
                       className="relative w-full h-full"
@@ -299,7 +299,7 @@ export default function LandingPage() {
                         src={perfume.image}
                         alt={perfume.name}
                         fill
-                        className="object-cover scale-[1.3] group-hover:scale-[1.4] transition-transform duration-700"
+                        className="object-contain scale-90 group-hover:scale-100 transition-transform duration-700"
                       />
                     </motion.div>
                   </div>
@@ -348,13 +348,6 @@ export default function LandingPage() {
                   <p className="text-slate-600 text-sm mb-8 leading-relaxed font-light">
                     {perfume.description}
                   </p>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 border border-slate-900 text-slate-900 rounded-full hover:bg-slate-900 hover:text-white transition-all font-medium tracking-wide"
-                  >
-                    Order Custom
-                  </motion.button>
                 </div>
               </motion.div>
             ))}
@@ -371,7 +364,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="relative h-[600px] rounded-[2rem] overflow-hidden bg-white shadow-2xl"
+              className="relative h-[400px] lg:h-[600px] rounded-[2rem] overflow-hidden bg-white shadow-2xl"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-amber-50/50" />
               <Image
@@ -392,7 +385,7 @@ export default function LandingPage() {
               <div className="inline-block px-4 py-2 bg-amber-50 rounded-full text-xs tracking-widest text-amber-900 font-bold uppercase">
                 Our Story
               </div>
-              <h2 className="text-5xl lg:text-6xl font-serif leading-none text-slate-900">
+              <h2 className="text-4xl lg:text-6xl font-serif leading-none text-slate-900">
                 Crafted with <br />
                 <span className="italic text-amber-900/80">Passion & Precision</span>
               </h2>
@@ -427,7 +420,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl lg:text-6xl font-serif mb-8 text-white"
+            className="text-3xl md:text-4xl lg:text-6xl font-serif mb-8 text-white"
           >
             Ready to Create Your <br /> <span className="italic text-amber-200">Custom Scent?</span>
           </motion.h2>
@@ -501,10 +494,6 @@ export default function LandingPage() {
             <p className="text-sm text-slate-400 font-light">
               © {new Date().getFullYear()} Yeab Perfume. All rights reserved.
             </p>
-            <div className="flex gap-6">
-              <a href="#" className="text-sm text-slate-400 hover:text-slate-900 transition-colors">Privacy</a>
-              <a href="#" className="text-sm text-slate-400 hover:text-slate-900 transition-colors">Terms</a>
-            </div>
           </div>
         </div>
       </footer>
