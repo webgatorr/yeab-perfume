@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Sparkles, Star, MapPin, Mail, Instagram, Check, Menu, X } from 'lucide-react';
+import { ArrowRight, Sparkles, Star, MapPin, Mail, Instagram, Check } from 'lucide-react';
 import { useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 
@@ -28,7 +28,6 @@ const fadeScale = {
 
 export default function LandingPage() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
   const y2 = useTransform(scrollY, [0, 500], [0, -100]);
@@ -109,60 +108,8 @@ export default function LandingPage() {
               </a>
             </nav>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 -mr-2 text-slate-700"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
           </div>
         </div>
-
-        {/* Mobile Navigation Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden bg-white border-t border-slate-100 overflow-hidden"
-            >
-              <nav className="flex flex-col py-4 px-6 space-y-1">
-                <a
-                  href="#collection"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-3 text-base tracking-wide text-slate-700 hover:text-amber-900 transition-colors border-b border-slate-50"
-                >
-                  Collection
-                </a>
-                <a
-                  href="#about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-3 text-base tracking-wide text-slate-700 hover:text-amber-900 transition-colors border-b border-slate-50"
-                >
-                  About
-                </a>
-                <a
-                  href="#vision"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-3 text-base tracking-wide text-slate-700 hover:text-amber-900 transition-colors border-b border-slate-50"
-                >
-                  Vision
-                </a>
-                <a
-                  href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-3 text-base tracking-wide text-slate-700 hover:text-amber-900 transition-colors"
-                >
-                  Contact
-                </a>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.header>
 
       {/* Hero Section */}
@@ -708,11 +655,11 @@ export default function LandingPage() {
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
-              <div className="absolute bottom-10 left-10 right-10 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <p className="text-3xl font-serif italic tracking-wide mb-3">From Dubai to the World</p>
-                <div className="h-0.5 w-12 bg-amber-400 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" />
-                <p className="text-sm font-light text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
+              <div className="absolute bottom-6 md:bottom-10 left-6 md:left-10 right-6 md:right-10 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <p className="text-xl md:text-3xl font-serif italic tracking-wide mb-2 md:mb-3 leading-tight">From Dubai to the World</p>
+                <div className="h-0.5 w-10 md:w-12 bg-amber-400 mb-2 md:mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" />
+                <p className="text-[10px] md:text-sm font-light text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200 max-w-[200px] md:max-w-none">
                   Bridging distances with the art of perfumery.
                 </p>
               </div>
@@ -839,6 +786,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </div >
   );
 }
