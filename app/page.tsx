@@ -103,9 +103,6 @@ export default function LandingPage() {
               <a href="#vision" className="text-sm tracking-wide text-slate-600 hover:text-slate-900 transition-colors uppercase font-light">
                 Vision
               </a>
-              <a href="#contact" className="text-sm tracking-wide text-slate-600 hover:text-slate-900 transition-colors uppercase font-light">
-                Contact
-              </a>
             </nav>
 
           </div>
@@ -169,7 +166,7 @@ export default function LandingPage() {
                     className="text-sm md:text-base text-slate-500 leading-relaxed max-w-lg mx-auto lg:mx-0 font-light"
                   >
                     Each scent is designed to elevate your identity and leave a lasting impression.
-                    <span className="block mt-2 text-amber-900/80 font-medium">Experience refined fragrance — from Dubai to the world.</span>
+                    <span className="block mt-2 text-amber-900/80 font-medium">Experience refined fragrance - from Dubai to the world.</span>
                   </motion.p>
                 </div>
               </div>
@@ -200,7 +197,7 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Right Image */}
-            <div className="relative h-[300px] sm:h-[450px] lg:h-[800px] w-full mb-4 md:mb-8 lg:mb-0">
+            <div className="relative h-[400px] sm:h-[450px] lg:h-[800px] w-full mb-4 md:mb-8 lg:mb-0">
               <motion.div
                 style={{ y: y2 }}
                 initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
@@ -215,7 +212,7 @@ export default function LandingPage() {
                   src="/images/hero.png"
                   alt="Yeab Perfume - Modern Luxury Fragrance"
                   fill
-                  className="object-contain drop-shadow-2xl scale-[1.1] sm:scale-100"
+                  className="object-contain drop-shadow-2xl scale-[1.3] sm:scale-100"
                   priority
                 />
               </motion.div>
@@ -263,7 +260,7 @@ export default function LandingPage() {
                   Yeab Perfume is built on precision, quality, and purpose. Our fragrances are carefully developed using premium-grade oils and expertly balanced compositions to deliver long-lasting, elegant scents.
                 </p>
                 <p>
-                  Inspired by modern lifestyles and global standards, Yeab Perfume blends luxury with authenticity — creating fragrances that feel personal, confident, and timeless.
+                  Inspired by modern lifestyles and global standards, Yeab Perfume blends luxury with authenticity - creating fragrances that feel personal, confident, and timeless.
                 </p>
                 <div className="pt-4 border-t border-slate-200">
                   <p className="text-lg md:text-xl font-serif text-slate-800 italic">
@@ -354,7 +351,7 @@ export default function LandingPage() {
               Crafted with <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-amber-900 to-amber-700">Attention to Detail</span>
             </motion.h2>
             <motion.p variants={fadeInUp} className="text-slate-600 max-w-2xl mx-auto font-light text-base md:text-lg px-2">
-              Our perfumes are crafted with attention to every detail — from the first spray to the final note.
+              Our perfumes are crafted with attention to every detail - from the first spray to the final note.
             </motion.p>
           </motion.div>
 
@@ -436,7 +433,7 @@ export default function LandingPage() {
               Discover Modern Fragrances
             </h2>
             <p className="text-slate-600 max-w-2xl mx-auto font-light text-base md:text-lg px-2">
-              A curated range of modern fragrances for men and women. From fresh and clean expressions to deep, bold signatures — each scent is created to complement different moments, moods, and identities.
+              A curated range of modern fragrances for men and women. From fresh and clean expressions to deep, bold signatures each scent is created to complement different moments, moods, and identities.
             </p>
             <p className="text-amber-900/80 font-medium mt-3 md:mt-4 text-base md:text-lg italic">
               Choose a fragrance that speaks without words.
@@ -752,7 +749,7 @@ export default function LandingPage() {
                 Modern luxury. Lasting presence.
               </p>
               <p className="text-slate-400 text-xs md:text-sm leading-relaxed max-w-md font-light">
-                Crafting refined fragrances that elevate your identity and leave a lasting impression — from Dubai to the world.
+                Crafting refined fragrances that elevate your identity and leave a lasting impression - from Dubai to the world.
               </p>
             </div>
 
@@ -762,7 +759,6 @@ export default function LandingPage() {
                 <li><a href="#collection" className="text-xs md:text-sm text-slate-500 hover:text-slate-900 transition-colors">Collection</a></li>
                 <li><a href="#about" className="text-xs md:text-sm text-slate-500 hover:text-slate-900 transition-colors">About</a></li>
                 <li><a href="#vision" className="text-xs md:text-sm text-slate-500 hover:text-slate-900 transition-colors">Vision</a></li>
-                <li><a href="#contact" className="text-xs md:text-sm text-slate-500 hover:text-slate-900 transition-colors">Contact</a></li>
               </ul>
             </div>
 
