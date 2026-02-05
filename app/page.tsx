@@ -336,7 +336,11 @@ export default function LandingPage() {
       </section>
 
       {/* Craftsmanship Section */}
-      <section className="py-24 px-6 lg:px-12 bg-white relative">
+      <section className="py-24 px-6 lg:px-12 bg-gradient-to-b from-white via-amber-50/30 to-white relative overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl -z-10" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-100/50 rounded-full blur-3xl -z-10" />
+
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="initial"
@@ -345,11 +349,11 @@ export default function LandingPage() {
             variants={staggerContainer}
             className="text-center mb-16"
           >
-            <motion.div variants={fadeInUp} className="inline-block px-4 py-2 bg-amber-50 rounded-full text-xs tracking-widest text-amber-900 font-bold uppercase mb-6">
-              Craftsmanship
+            <motion.div variants={fadeInUp} className="inline-block px-4 py-2 bg-gradient-to-r from-amber-100 to-amber-50 rounded-full text-xs tracking-widest text-amber-900 font-bold uppercase mb-6 shadow-sm">
+              Craftsmanship & Quality
             </motion.div>
             <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl lg:text-5xl font-serif mb-6">
-              Crafted with <span className="italic text-amber-900/80">Attention to Detail</span>
+              Crafted with <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-amber-900 to-amber-700">Attention to Detail</span>
             </motion.h2>
             <motion.p variants={fadeInUp} className="text-slate-600 max-w-2xl mx-auto font-light text-lg">
               Our perfumes are crafted with attention to every detail — from the first spray to the final note.
@@ -364,25 +368,57 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className="bg-slate-50 p-8 rounded-2xl hover:shadow-lg transition-all duration-300 group"
+                className="relative bg-white p-8 rounded-2xl hover:shadow-2xl transition-all duration-500 group border border-slate-100 overflow-hidden"
               >
-                <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-amber-200 transition-colors">
-                  <Check className="w-6 h-6 text-amber-900" />
+                {/* Gradient Background on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                {/* Icon Container */}
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg">
+                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                      <Check className="w-5 h-5 text-white stroke-[3]" />
+                    </div>
+                  </div>
+                  {/* Decorative Corner Element */}
+                  <div className="absolute -top-2 -right-2 w-6 h-6 border-t-2 border-r-2 border-amber-200/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-                <h3 className="text-lg font-medium text-slate-900">{feature}</h3>
+
+                {/* Feature Text */}
+                <h3 className="relative text-lg font-semibold text-slate-900 mb-2 group-hover:text-amber-900 transition-colors duration-300">
+                  {feature}
+                </h3>
+
+                {/* Subtle Description */}
+                <p className="relative text-sm text-slate-500 font-light opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                  {idx === 0 && "Premium ingredients sourced globally"}
+                  {idx === 1 && "Engineered for all-day wear"}
+                  {idx === 2 && "Expertly balanced compositions"}
+                  {idx === 3 && "Sophisticated minimalist design"}
+                </p>
+
+                {/* Bottom Accent Line */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.div>
             ))}
           </div>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
-            className="text-center text-xl text-slate-600 font-light mt-12"
+            className="text-center mt-16 space-y-4"
           >
-            Yeab Perfume is designed to <span className="font-medium text-slate-900">perform</span>.
-          </motion.p>
+            <p className="text-xl text-slate-600 font-light">
+              Yeab Perfume is designed to <span className="font-semibold text-amber-900">perform</span>.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
+              <div className="w-12 h-px bg-gradient-to-r from-transparent to-amber-300" />
+              <span className="uppercase tracking-widest">From the first spray to the final note</span>
+              <div className="w-12 h-px bg-gradient-to-l from-transparent to-amber-300" />
+            </div>
+          </motion.div>
         </div>
       </section>
 
