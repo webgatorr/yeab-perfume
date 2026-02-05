@@ -197,7 +197,7 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Right Image */}
-            <div className="relative h-[400px] sm:h-[450px] lg:h-[800px] w-full mb-4 md:mb-8 lg:mb-0">
+            <div className="relative h-[300px] sm:h-[450px] lg:h-[800px] w-full mb-4 md:mb-8 lg:mb-0">
               <motion.div
                 style={{ y: y2 }}
                 initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
@@ -212,7 +212,7 @@ export default function LandingPage() {
                   src="/images/hero.png"
                   alt="Yeab Perfume - Modern Luxury Fragrance"
                   fill
-                  className="object-contain drop-shadow-2xl scale-[1.3] sm:scale-100"
+                  className="object-contain drop-shadow-2xl scale-[1.1] sm:scale-100"
                   priority
                 />
               </motion.div>
