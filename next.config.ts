@@ -9,6 +9,8 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   workboxOptions: {
     disableDevLogs: true,
   },
+  // Import custom service worker logic
+  importScripts: ["/custom-sw.js"],
 });
 
 const nextConfig: NextConfig = {

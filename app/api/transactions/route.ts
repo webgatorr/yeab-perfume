@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import dbConnect from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
+import { notifyTransactionCreated } from '@/lib/notifications';
 
 // GET - Fetch transactions with filters, search, and pagination
 export async function GET(request: NextRequest) {
@@ -85,6 +86,18 @@ export async function POST(request: NextRequest) {
         });
 
         return NextResponse.json(transaction, { status: 201 });
+
+        // Send notification to admin if action was done by staff
+        if (session.user?.role === 'staff') {
+            const t = transaction as any;
+            notifyTransactionCreated(
+                t.type,
+                t.amount,
+                t.category,
+                session.user.name || session.user.username || 'Staff',
+                session.user.id
+            );
+        }
     } catch (error) {
         console.error('Error creating transaction:', error);
         return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import dbConnect from '@/lib/mongodb';
 import Shipment from '@/models/Shipment';
 import Perfume from '@/models/Perfume';
+import { notifyShipmentCreated } from '@/lib/notifications';
 
 // GET - Fetch shipments with filters
 export async function GET(request: NextRequest) {
@@ -139,6 +140,20 @@ export async function POST(request: NextRequest) {
             .lean();
 
         return NextResponse.json(populatedShipment, { status: 201 });
+
+        // Send notification to admin if action was done by staff
+        // @ts-ignore
+        const user = session!.user;
+        if (user?.role === 'staff') {
+            notifyShipmentCreated(
+                perfume.name,
+                type,
+                inputQuantity,
+                inputUnit,
+                user.name || user.username || 'Staff',
+                user.id
+            );
+        }
     } catch (error) {
         console.error('Error creating shipment:', error);
         return NextResponse.json({ error: 'Failed to create shipment' }, { status: 500 });

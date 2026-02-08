@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { Menu, X, LayoutDashboard, Package, DollarSign, LogOut, Boxes, Settings } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -64,6 +65,9 @@ export default function Navbar() {
 
                     {/* User Menu */}
                     <div className="flex items-center space-x-3 sm:space-x-4">
+                        {session.user.role === 'admin' && (
+                            <NotificationBell />
+                        )}
                         <div className="hidden md:block text-sm font-semibold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
                             {session.user?.name}
                         </div>

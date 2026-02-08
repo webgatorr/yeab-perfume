@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
 import dbConnect from '@/lib/mongodb';
 import Perfume from '@/models/Perfume';
+import { notifyInventoryAdded } from '@/lib/notifications';
 
 // GET - Fetch all perfumes with optional filters
 export async function GET(request: NextRequest) {
@@ -89,6 +91,21 @@ export async function POST(request: NextRequest) {
         });
 
         return NextResponse.json(perfume, { status: 201 });
+
+        // Send notification to admin if action was done by staff
+        // checking if user role exists to determine if we should notify
+        // @ts-ignore
+        const user = session!.user;
+        if (user?.role === 'staff') {
+            const p = perfume as any;
+            notifyInventoryAdded(
+                p.name,
+                p.currentStock,
+                p.unit,
+                user.name || user.username || 'Staff',
+                user.id
+            );
+        }
     } catch (error: any) {
         console.error('Error creating perfume:', error);
         if (error.code === 11000) {

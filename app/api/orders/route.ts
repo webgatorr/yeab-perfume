@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import dbConnect from '@/lib/mongodb';
 import Order from '@/models/Order';
+import { notifyOrderCreated } from '@/lib/notifications';
 
 // GET - Fetch orders with search and filters
 export async function GET(request: NextRequest) {
@@ -110,6 +111,15 @@ export async function POST(request: NextRequest) {
             createdBy: session.user.id !== 'env-admin' ? session.user.id : undefined,
             orderTaker: body.orderTaker || session.user.name,
         });
+
+        // Send notification to admin if action was done by staff
+        if (session.user.role === 'staff') {
+            notifyOrderCreated(
+                nextOrderNumber,
+                session.user.name || session.user.username || 'Staff',
+                session.user.id
+            );
+        }
 
         return NextResponse.json(order, { status: 201 });
     } catch (error) {
