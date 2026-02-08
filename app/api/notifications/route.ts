@@ -104,16 +104,13 @@ export async function DELETE(request: NextRequest) {
 
         await dbConnect();
 
-        // Delete notifications older than 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
+        // Delete all read notifications
         const result = await Notification.deleteMany({
-            createdAt: { $lt: thirtyDaysAgo },
+            isRead: true,
         });
 
         return NextResponse.json({
-            message: `Deleted ${result.deletedCount} old notifications`
+            message: `Deleted ${result.deletedCount} read notifications`
         });
     } catch (error) {
         console.error('Error deleting notifications:', error);

@@ -143,7 +143,7 @@ export default function NotificationBell() {
                         className="w-full text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 h-8 justify-center"
                     >
                         <Trash2 className="w-3 h-3 mr-2" />
-                        Clear old notifications
+                        Clear read notifications
                     </Button>
                 </div>
             </PopoverContent>

@@ -218,7 +218,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         try {
             await fetch('/api/notifications', { method: 'DELETE' });
             mutate('/api/notifications?limit=20');
-            toast.success('Old notifications cleared');
+            toast.success('Read notifications cleared');
         } catch (error) {
             console.error('Error clearing old notifications:', error);
             toast.error('Failed to clear notifications');
