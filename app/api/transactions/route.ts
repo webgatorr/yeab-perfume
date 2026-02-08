@@ -85,19 +85,20 @@ export async function POST(request: NextRequest) {
             createdBy: session.user?.name || 'Admin',
         });
 
-        return NextResponse.json(transaction, { status: 201 });
-
         // Send notification to admin if action was done by staff
         if (session.user?.role === 'staff') {
             const t = transaction as any;
-            notifyTransactionCreated(
+            const user = session.user as any;
+            await notifyTransactionCreated(
                 t.type,
                 t.amount,
                 t.category,
-                session.user.name || session.user.username || 'Staff',
-                session.user.id
+                user.name || user.username || 'Staff',
+                user.id
             );
         }
+
+        return NextResponse.json(transaction, { status: 201 });
     } catch (error) {
         console.error('Error creating transaction:', error);
         return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
