@@ -63,6 +63,7 @@ function OrdersContent() {
     const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
     const [filters, setFilters] = useState({
         search: searchParams.get('search') || '',
+        couponNumber: searchParams.get('couponNumber') || '',
         status: searchParams.get('status') || '',
         emirate: searchParams.get('emirate') || '',
         orderTaker: searchParams.get('orderTaker') || '',
@@ -80,6 +81,7 @@ function OrdersContent() {
         setCurrentPage(parseInt(searchParams.get('page') || '1'));
         setFilters({
             search: searchParams.get('search') || '',
+            couponNumber: searchParams.get('couponNumber') || '',
             status: searchParams.get('status') || '',
             emirate: searchParams.get('emirate') || '',
             orderTaker: searchParams.get('orderTaker') || '',
@@ -89,24 +91,25 @@ function OrdersContent() {
     // Debounce search input to update URL
     useEffect(() => {
         const timer = setTimeout(() => {
-            updateUrl(filters.search, filters.status, filters.emirate, filters.orderTaker, currentPage);
+            updateUrl(filters.search, filters.couponNumber, filters.status, filters.emirate, filters.orderTaker, currentPage);
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [filters.search]);
+    }, [filters.search, filters.couponNumber]);
 
     // Immediate update for other filters
     const handleFilterChange = (key: string, value: string) => {
         const newFilters = { ...filters, [key]: value };
         setFilters(newFilters);
         // Reset to page 1 on filter change
-        updateUrl(newFilters.search, newFilters.status, newFilters.emirate, newFilters.orderTaker, 1);
+        updateUrl(newFilters.search, newFilters.couponNumber, newFilters.status, newFilters.emirate, newFilters.orderTaker, 1);
     };
 
-    const updateUrl = (search: string, status: string, emirate: string, orderTaker: string, page: number) => {
+    const updateUrl = (search: string, couponNumber: string, status: string, emirate: string, orderTaker: string, page: number) => {
         const params = new URLSearchParams();
         if (page > 1) params.append('page', page.toString());
         if (search) params.append('search', search);
+        if (couponNumber) params.append('couponNumber', couponNumber);
         if (status) params.append('status', status);
         if (emirate) params.append('emirate', emirate);
         if (orderTaker) params.append('orderTaker', orderTaker);
@@ -122,7 +125,7 @@ function OrdersContent() {
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
-        updateUrl(filters.search, filters.status, filters.emirate, filters.orderTaker, newPage);
+        updateUrl(filters.search, filters.couponNumber, filters.status, filters.emirate, filters.orderTaker, newPage);
     };
 
     useEffect(() => {
@@ -161,6 +164,7 @@ function OrdersContent() {
             // Build params based on current filters AND the date range from dialog
             const params = new URLSearchParams();
             if (filters.search) params.append('search', filters.search);
+            if (filters.couponNumber) params.append('couponNumber', filters.couponNumber);
             if (filters.status) params.append('status', filters.status);
             if (filters.emirate) params.append('emirate', filters.emirate);
             if (filters.orderTaker) params.append('orderTaker', filters.orderTaker);
@@ -307,6 +311,15 @@ function OrdersContent() {
                                 className="pl-12 h-12 rounded-2xl border-0 shadow-sm bg-white ring-1 ring-slate-200 focus-visible:ring-indigo-500 transition-shadow"
                                 value={filters.search}
                                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                            />
+                        </div>
+                        <div className="relative sm:w-64">
+                            <Input
+                                type="text"
+                                placeholder="Search by Coupon #..."
+                                className="h-12 rounded-2xl border-0 shadow-sm bg-white ring-1 ring-slate-200 focus-visible:ring-amber-500 transition-shadow"
+                                value={filters.couponNumber}
+                                onChange={(e) => setFilters({ ...filters, couponNumber: e.target.value })}
                             />
                         </div>
                         <Button

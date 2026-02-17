@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '20');
         const search = searchParams.get('search') || '';
+        const couponNumber = searchParams.get('couponNumber') || '';
         const status = searchParams.get('status') || '';
         const emirate = searchParams.get('emirate') || '';
         const orderTaker = searchParams.get('orderTaker') || '';
@@ -28,8 +29,14 @@ export async function GET(request: NextRequest) {
         // Build query
         const query: any = {};
 
-        // Search across multiple fields
-        if (search) {
+        // Dedicated coupon number search (takes priority)
+        if (couponNumber) {
+            const escapedCoupon = couponNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            query.couponNumber = { $regex: escapedCoupon, $options: 'i' };
+        }
+
+        // General search across multiple fields (only if no coupon search)
+        if (search && !couponNumber) {
             // Escape special regex characters to prevent invalid regex errors
             const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const searchNumber = parseInt(search);
