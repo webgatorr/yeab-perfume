@@ -39,9 +39,18 @@ export async function GET(request: NextRequest) {
                         $sum: { $cond: [{ $eq: ['$status', 'delivered'] }, 1, 0] }
                     },
                     canceledOrders: {
-                        $sum: { $cond: [{ $eq: ['$status', 'canceled'] }, 1, 0] }
+                        $sum: { $cond: [{ $eq: ['$status', 'cancelled'] }, 1, 0] }
                     },
-                    totalRevenue: { $sum: '$amount' }
+                    // Only count revenue from non-cancelled orders
+                    totalRevenue: {
+                        $sum: {
+                            $cond: [
+                                { $ne: ['$status', 'cancelled'] },
+                                '$amount',
+                                0
+                            ]
+                        }
+                    }
                 }
             }
         ]);
@@ -72,7 +81,16 @@ export async function GET(request: NextRequest) {
                 $group: {
                     _id: dateGroup,
                     count: { $sum: 1 },
-                    revenue: { $sum: '$amount' }
+                    // Only count revenue from non-cancelled orders
+                    revenue: {
+                        $sum: {
+                            $cond: [
+                                { $ne: ['$status', 'cancelled'] },
+                                '$amount',
+                                0
+                            ]
+                        }
+                    }
                 }
             },
             { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } }
@@ -80,11 +98,11 @@ export async function GET(request: NextRequest) {
 
         // 3. Top Products
         const topProducts = await Order.aggregate([
-            { $match: query },
+            { $match: { ...query, status: { $ne: 'cancelled' } } }, // Exclude cancelled orders
             {
                 $group: {
                     _id: '$perfumeChoice',
-                    count: { $sum: 1 }, // Assuming 1 order = 1 unit since we don't have quantity
+                    count: { $sum: 1 },
                     revenue: { $sum: '$amount' }
                 }
             },
